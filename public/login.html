@@ -664,7 +664,7 @@
   </div>
 
   <script>
-    var PHP_API = 'http://localhost/foundwise-server/php/api';
+    var PHP_API = '';
 
     function switchTo(form) {
       document.getElementById('form-signin').classList.toggle('hidden', form !== 'signin');
@@ -725,7 +725,7 @@
         var userInfo = await infoResp.json();
 
         // Send to our backend
-        var resp = await fetch(PHP_API + '/google_auth.php', {
+        var resp = await fetch(PHP_API + '/api/google-auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: userInfo.email, name: userInfo.name, google_id: userInfo.sub })
@@ -769,7 +769,7 @@
       setStatus('si-status', '<span class="spinner"></span><span class="hint">Checking your account…</span>');
 
       try {
-        var resp = await fetch(PHP_API + '/login.php', {
+        var resp = await fetch(PHP_API + '/api/login', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email, password: pass })
         });
@@ -785,7 +785,7 @@
         };
 
         try {
-          var tr = await fetch(PHP_API + '/verify_otp.php', {
+          var tr = await fetch(PHP_API + '/api/verify-otp', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email })
           });
@@ -830,7 +830,7 @@
       setStatus('su-status', '<span class="spinner"></span><span class="hint">Setting up your account…</span>');
 
       try {
-        var resp = await fetch(PHP_API + '/register.php', {
+        var resp = await fetch(PHP_API + '/api/register', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email, name: name, password: pass, role: role })
         });
@@ -841,7 +841,7 @@
         var session = { name: name, email: email, role: roleLabels[role] || 'Student', user_id: data.user_id };
 
         try {
-          var tr = await fetch(PHP_API + '/verify_otp.php', {
+          var tr = await fetch(PHP_API + '/api/verify-otp', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email })
           });

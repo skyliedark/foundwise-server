@@ -3493,8 +3493,8 @@
 
   <script>
 
-    // Calls go through api.php in the same folder — no CORS issues
-    var API_BASE = 'http://localhost/foundwise-server/php/api';
+    // API calls go through the Express backend
+    var API_BASE = '';
 
     /* ══════════════════════════════════════════════════════════
        EmailJS Configuration — Notify Owner
@@ -3552,9 +3552,9 @@
 
     function fetchData() {
       Promise.all([
-        fetch('/foundwise-server/php/api/get_items.php').then(r => r.json()),
-        fetch('/foundwise-server/php/api/get_claims.php').then(r => r.json()),
-        fetch('/foundwise-server/php/api/get_activity_logs.php?limit=100').then(r => r.json())
+        fetch('/api/items').then(r => r.json()),
+        fetch('/api/claims').then(r => r.json()),
+        fetch('/api/activity-logs?limit=100').then(r => r.json())
       ]).then(([itemsData, claimsData, logsData]) => {
         if (itemsData.success) items = itemsData.items;
         if (claimsData.success) claims = claimsData.claims;
@@ -3777,7 +3777,7 @@
 
     /* ── Standalone activity log refresh ── */
     function fetchActivityLogs() {
-      fetch('/foundwise-server/php/api/get_activity_logs.php?limit=100')
+      fetch('/api/activity-logs?limit=100')
         .then(function (r) { return r.json(); })
         .then(function (data) {
           if (data.success) {
@@ -3942,7 +3942,7 @@
       btn.textContent = 'Submitting...';
       btn.disabled = true;
 
-      fetch('/foundwise-server/php/api/add_item.php', {
+      fetch('/api/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -4033,7 +4033,7 @@
 
     /* ── Approve / Reject / View Proof ── */
     function updateClaimStatus(claimId, status) {
-      fetch('/foundwise-server/php/api/update_claim.php', {
+      fetch('/api/claims/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ claimId: claimId, status: status })
@@ -4103,7 +4103,7 @@
         try { userId = JSON.parse(session).user_id; } catch (e) { }
       }
 
-      fetch('/foundwise-server/php/api/update_item_status.php', {
+      fetch('/api/items/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId: item.id, status: newStatus, user_id: userId })
@@ -4155,27 +4155,9 @@
         });
     }
 
-    /* ════════════════════════════════════════════════════════════
-       DIDIT API — calls go through api.php (same folder)
-    ════════════════════════════════════════════════════════════ */
-    async function diditPost(endpoint, body) {
-      var resp;
-      try {
-        resp = await fetch(API_BASE, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ endpoint: endpoint, payload: body })
-        });
-      } catch (e) {
-        throw new Error('Cannot reach api.php — make sure both files are in the same folder on a PHP server.');
-      }
-      var data = await resp.json().catch(function () { return {}; });
-      if (!resp.ok) throw new Error(data.detail || data.message || data.error || 'Error ' + resp.status);
-      return data;
-    }
 
-    /* ── Gmail OTP helpers (self-hosted PHP + MySQL) ── */
-    var PHP_OTP = 'http://localhost/foundwise/api';
+
+    /* ── Gmail OTP helpers ── */
 
     function setGmailStatus(html) { var el = document.getElementById('gmail-otp-status'); if (el) el.innerHTML = html; }
 
@@ -4219,7 +4201,7 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
       setGmailStatus('<span class="didit-spinner"></span><span class="didit-hint">Sending code to your Gmail…</span>');
       try {
-        var resp = await fetch(PHP_OTP + '/send_otp.php', {
+        var resp = await fetch('/api/otp/send', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email })
         });
@@ -4245,7 +4227,7 @@
       if (code.length < 6) { showToast('Enter the full 6-digit code', 'error'); return; }
       setGmailStatus('<span class="didit-spinner"></span><span class="didit-hint">Verifying…</span>');
       try {
-        var resp = await fetch(PHP_OTP + '/check_otp.php', {
+        var resp = await fetch('/api/otp/check', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: claimData.gmailEmail, code: code })
         });
@@ -4379,7 +4361,7 @@
       var btn = document.querySelector('.sub-btn');
       if (btn) { btn.textContent = 'Submitting...'; btn.disabled = true; }
 
-      fetch('/foundwise-server/php/api/submit_claim.php', {
+      fetch('/api/claims', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
