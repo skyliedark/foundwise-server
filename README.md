@@ -1,7 +1,7 @@
 # FoundWise — Lost & Found Management System
 
 A Node.js/Express backend for the **FoundWise** campus lost-and-found platform.  
-Handles OTP verification (via Didit API), item claim workflows, and email notifications (via Nodemailer/Gmail SMTP) — all backed by a MySQL database running on XAMPP.
+Handles user authentication (Google OAuth & PHP password auth), item claim workflows, and email notifications (via Nodemailer/Gmail SMTP) — all backed by a MySQL database running on XAMPP.
 
 ---
 
@@ -9,17 +9,16 @@ Handles OTP verification (via Didit API), item claim workflows, and email notifi
 
 ```
 foundwise-server/
-├── server.js           ← Express backend (OTP proxy, claim API)
+├── server.js           ← Express backend (claim API, notifications)
 ├── mailer.js           ← Nodemailer email notifications
 ├── package.json
 ├── .env.example        ← Copy to .env and fill in your keys
 ├── .gitignore
 ├── database/           ← SQL schema & migrations
-├── php/                ← PHP helpers (legacy API bridge)
+├── php/                ← PHP API (auth, user management)
 └── public/
     ├── FoundWise.html  ← Main dashboard (admin & student)
-    ├── login.html      ← Login / OTP verification page
-    └── api.php         ← PHP API endpoint
+    └── login.html      ← Login page (password + Google OAuth)
 ```
 
 ---
@@ -38,10 +37,6 @@ cp .env.example .env
 
 Open `.env` and fill in **all** values:
 ```env
-# Didit OTP API
-DIDIT_API_KEY=your_didit_api_key_here
-DIDIT_BASE_URL=https://verification.didit.me
-
 # Server
 PORT=3000
 ALLOWED_ORIGIN=http://localhost:3000
@@ -82,8 +77,6 @@ Go to: **http://localhost:3000**
 
 | Method | Route               | Description                                    |
 |--------|---------------------|------------------------------------------------|
-| `POST` | `/api/otp/send`     | Sends a 6-digit OTP to the given email         |
-| `POST` | `/api/otp/verify`   | Verifies the OTP code entered by the user      |
 | `POST` | `/api/claim/notify` | Sends a claim notification email to a student  |
 | `POST` | `/claim-item`       | Marks an item as claimed and notifies the owner|
 
@@ -91,9 +84,9 @@ Go to: **http://localhost:3000**
 
 ## Security Features
 
-- ✅ **API key hidden** — stored in `.env`, never sent to the browser
-- ✅ **Rate limiting** — max 5 OTP sends per IP per 10 minutes; 10 verify attempts
+- ✅ **Google OAuth** — secure sign-in via Google accounts
+- ✅ **Rate limiting** — protects endpoints from abuse
 - ✅ **CORS** — only your own frontend origin can call the API
-- ✅ **Input validation** — email format and 6-digit code are validated server-side
-- ✅ **Error sanitization** — raw Didit errors are never leaked to the client
+- ✅ **Input validation** — all inputs are validated server-side
 - ✅ **DB transactions** — claim operations use transactions with rollback on failure
+- ✅ **Error sanitization** — internal errors are never leaked to the client

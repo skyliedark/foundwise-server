@@ -4,6 +4,9 @@ node_modules/
 # Secret environment file — NEVER commit this
 .env
 
+# Editor config (machine-specific)
+.vscode/
+
 # OS files
 .DS_Store
 Thumbs.db
