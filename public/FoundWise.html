@@ -1,0 +1,4501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>FoundWise — Lost &amp; Found</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <!-- EmailJS SDK — required for Notify Owner email feature -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    :root {
+      /* ── Dark mode: deep forest green ── */
+      --fw-bg: #0D1F16;
+      --fw-blue: #C5E938;
+      --fw-violet: #3AAF72;
+      --fw-magenta: #1C5C38;
+      --fw-glass: rgba(255, 255, 255, .05);
+      --fw-glass-md: rgba(255, 255, 255, .10);
+      --fw-glass-border: rgba(197, 233, 56, .14);
+      --fw-glass-border-soft: rgba(255, 255, 255, .07);
+      --fw-t1: #F0FAF2;
+      --fw-t2: rgba(195, 240, 210, .90);
+      --fw-t3: rgba(160, 210, 180, .60);
+      --font-display: "Clash Display", ui-sans-serif, system-ui, sans-serif;
+      --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+      --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+      --t1: var(--fw-t1);
+      --t2: var(--fw-t2);
+      --t3: var(--fw-t3);
+      --glass: var(--fw-glass);
+      --glass-border: var(--fw-glass-border);
+      --glass-border-soft: var(--fw-glass-border-soft);
+      --blue: #C5E938;
+      --blue-dark: #A5C918;
+      --blue-mid: #DDF247;
+    }
+
+    body.light-theme {
+      --fw-bg: #EEF8EC;
+      --fw-t1: #0A1E14;
+      --fw-t2: #1A3D28;
+      --fw-t3: #4A7A5A;
+      --fw-glass: rgba(255, 255, 255, 0.95);
+      --fw-glass-md: #D3EDD3;
+      --fw-glass-border: rgba(39, 96, 65, 0.22);
+      --fw-glass-border-soft: rgba(39, 96, 65, 0.12);
+      --fw-blue: #276041;
+      --fw-violet: #3AAF72;
+      --fw-magenta: #276041;
+    }
+
+    body.light-theme .fw-side {
+      background: #276041;
+      border-right: none;
+    }
+
+    body.light-theme .fw-brand-wrap {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body.light-theme .fw-side-foot {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body.light-theme .fw-brand-name {
+      color: #FFFFFF;
+    }
+
+    body.light-theme .fw-brand-sub {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    body.light-theme .fw-nl {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    body.light-theme .fw-ni {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    body.light-theme .fw-ni:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+
+    body.light-theme .fw-ni.on {
+      background: #C5E938;
+      color: #112E1E;
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+    body.light-theme .fw-uname {
+      color: #FFFFFF;
+    }
+
+    body.light-theme .fw-urole {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    body.light-theme #theme-toggle {
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.light-theme .fw-card {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      border-color: #C9E0CB;
+    }
+
+    body.light-theme .fw-tbl th {
+      background: #E4F0E1;
+      color: #2E5A3A;
+    }
+
+    body.light-theme .fw-btn-primary {
+      background: #276041;
+      color: #FFFFFF;
+      box-shadow: none;
+      border: none;
+    }
+
+    body.light-theme .fw-btn-primary:hover {
+      background: #1B452F;
+    }
+
+    body.light-theme .fw-brand-logo svg path {
+      fill: #276041;
+    }
+
+    body.light-theme .fw-brand-logo {
+      background: #C5E938;
+      box-shadow: none;
+    }
+
+    body.light-theme .fw-sc {
+      border-color: #C9E0CB;
+    }
+
+    body.light-theme .shimmer-bar {
+      background: linear-gradient(90deg, transparent, #276041 25%, #C5E938 50%, #276041 75%, transparent);
+    }
+
+    body.light-theme .fw-side-foot button[onclick="logout()"] {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      background: transparent !important;
+      color: #ff8787 !important;
+    }
+
+    * {
+      box-sizing: border-box;
+      border-color: var(--fw-glass-border);
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--fw-bg);
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--fw-t1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea,
+    table,
+    th,
+    td,
+    label,
+    p,
+    span,
+    div,
+    li,
+    a {
+      font-family: var(--font-sans);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .fw-brand-name,
+    .fw-ptitle,
+    .fw-ct,
+    .fw-sc-lbl,
+    .fw-sc-val,
+    .fw-nl,
+    .fw-flbl,
+    .fw-tbl th,
+    .fw-iname,
+    .fw-cname,
+    .fw-uname,
+    .flbl,
+    .ct,
+    .sc-lbl,
+    .sc-val {
+      font-family: var(--font-display);
+      letter-spacing: -0.02em;
+      font-weight: 600;
+    }
+
+    .fw-serif,
+    .fw-ptitle em {
+      font-family: var(--font-serif) !important;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: #C5E938;
+    }
+
+    /* ── App shell ── */
+    .fw-app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      width: 100%;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .fw-app::before,
+    .fw-app::after {
+      content: '';
+      position: fixed;
+      inset: -20%;
+      z-index: -3;
+      pointer-events: none;
+    }
+
+    .fw-app::before {
+      background: radial-gradient(30% 25% at 20% 25%, rgba(58, 175, 114, .45), transparent 70%),
+        radial-gradient(28% 22% at 75% 70%, rgba(28, 92, 56, .55), transparent 70%),
+        radial-gradient(25% 20% at 50% 50%, rgba(100, 190, 130, .30), transparent 70%);
+      filter: blur(70px);
+      animation: fw-aurora-1 20s ease-in-out infinite alternate;
+      opacity: .9;
+    }
+
+    .fw-app::after {
+      background: radial-gradient(32% 26% at 80% 20%, rgba(197, 233, 56, .35), transparent 70%),
+        radial-gradient(30% 24% at 15% 80%, rgba(39, 96, 65, .50), transparent 70%);
+      filter: blur(80px);
+      animation: fw-aurora-2 24s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes fw-aurora-1 {
+      0% {
+        transform: translate3d(-8%, -6%, 0) scale(1);
+      }
+
+      50% {
+        transform: translate3d(10%, 8%, 0) rotate(20deg) scale(1.15);
+      }
+
+      100% {
+        transform: translate3d(-4%, 12%, 0) rotate(-10deg) scale(1.05);
+      }
+    }
+
+    @keyframes fw-aurora-2 {
+      0% {
+        transform: translate3d(6%, 10%, 0) scale(1.1);
+      }
+
+      50% {
+        transform: translate3d(-12%, -6%, 0) rotate(-25deg) scale(1.2);
+      }
+
+      100% {
+        transform: translate3d(8%, -10%, 0) rotate(15deg) scale(1);
+      }
+    }
+
+    /* ── Shimmer bar ── */
+    .shimmer-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(58, 175, 114, .8) 25%, rgba(197, 233, 56, 1) 50%, rgba(39, 96, 65, .8) 75%, transparent);
+      background-size: 200% 100%;
+      animation: shimbar 4s ease-in-out infinite;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    @keyframes shimbar {
+      0% {
+        background-position: 200% 0;
+        opacity: .55;
+      }
+
+      50% {
+        background-position: 0% 0;
+        opacity: 1;
+      }
+
+      100% {
+        background-position: -200% 0;
+        opacity: .55;
+      }
+    }
+
+    /* ── Sidebar ── */
+    .fw-side {
+      width: 230px;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid var(--fw-glass-border-soft);
+      background: rgba(5, 20, 10, .50);
+      backdrop-filter: blur(18px);
+      position: relative;
+      z-index: 2;
+    }
+
+    .fw-brand-wrap {
+      padding: 22px 16px 18px;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .fw-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .fw-brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #1C5C38, #3AAF72 60%, #C5E938);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(58, 175, 114, .4), 0 6px 20px rgba(58, 175, 114, .55);
+      animation: logo-pulse 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    .fw-brand-logo::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #C5E938;
+      bottom: -2px;
+      right: -2px;
+      border: 2px solid #0D1F16;
+    }
+
+    @keyframes logo-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 1px rgba(58, 175, 114, .4), 0 6px 20px rgba(58, 175, 114, .55);
+      }
+
+      50% {
+        box-shadow: 0 0 0 5px rgba(58, 175, 114, .18), 0 6px 30px rgba(197, 233, 56, .7);
+      }
+    }
+
+    .fw-brand-name {
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.035em;
+    }
+
+    .fw-brand-sub {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+      margin-top: 2px;
+      letter-spacing: .04em;
+    }
+
+    .fw-nav {
+      padding: 14px 10px;
+      flex: 1;
+    }
+
+    .fw-nl {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, .32);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: 12px 10px 6px;
+    }
+
+    .fw-ni {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fw-t2);
+      cursor: pointer;
+      margin-bottom: 2px;
+      transition: all .15s;
+    }
+
+    .fw-ni:hover {
+      background: rgba(255, 255, 255, .08);
+      color: var(--fw-t1);
+    }
+
+    .fw-ni.on {
+      background: linear-gradient(90deg, rgba(28, 92, 56, .95), rgba(58, 175, 114, .85), rgba(197, 233, 56, .6));
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(58, 175, 114, .45), inset 0 1px 0 rgba(255, 255, 255, .15);
+    }
+
+    .fw-ncount {
+      margin-left: auto;
+      font-size: 10.5px;
+      color: var(--fw-t3);
+    }
+
+    .fw-nbadge {
+      margin-left: auto;
+      background: #dc2626;
+      color: #fff;
+      font-size: 9.5px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .fw-side-foot {
+      padding: 12px 10px;
+      border-top: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .fw-urow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+
+    .fw-ava {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1C5C38, #C5E938);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .fw-uname {
+      font-size: 12.5px;
+      color: var(--fw-t1);
+    }
+
+    .fw-urole {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+    }
+
+    /* ── Main ── */
+    .fw-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .fw-topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      background: rgba(8, 14, 32, .55);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .fw-tl {
+      flex: 1;
+    }
+
+    .fw-ptitle {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      background: linear-gradient(92deg, #ffffff 0%, #DDF247 35%, #4FC88A 65%, #ffffff 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shim-text 8s linear infinite;
+    }
+
+    @keyframes shim-text {
+      0% {
+        background-position: 200% center;
+      }
+
+      100% {
+        background-position: -200% center;
+      }
+    }
+
+    .fw-psub {
+      font-size: 11.5px;
+      color: var(--fw-t3);
+      margin-top: 3px;
+    }
+
+    .fw-srch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--fw-glass);
+      border: 1px solid var(--fw-glass-border);
+      border-radius: 10px;
+      padding: 7px 12px;
+      width: 200px;
+    }
+
+    .fw-srch input {
+      border: none;
+      background: transparent;
+      font-size: 12.5px;
+      color: var(--fw-t1);
+      outline: none;
+      width: 100%;
+    }
+
+    .fw-bell {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      color: var(--fw-t2);
+    }
+
+    .fw-bdot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #dc2626;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      border: 1.5px solid var(--fw-bg);
+    }
+
+    .fw-btn-primary {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, #1C5C38, #3AAF72 60%, #C5E938);
+      box-shadow: 0 4px 16px rgba(58, 175, 114, .45);
+    }
+
+    /* ── Pages ── */
+    .page {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    .page.on {
+      display: flex;
+    }
+
+    .fw-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Stat cards ── */
+    .fw-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+    }
+
+    .fw-sc {
+      border-radius: 18px;
+      padding: 20px 20px 16px;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform .18s, box-shadow .18s;
+    }
+
+    .fw-sc:hover {
+      transform: translateY(-3px);
+    }
+
+    /* Card 1: Deep forest green */
+    .fw-sc:nth-child(1) {
+      background: linear-gradient(140deg, #1B5E3B 0%, #2D8A5A 60%, #3AAF72 100%);
+      box-shadow: 0 8px 32px rgba(29, 94, 59, .55), 0 2px 8px rgba(0, 0, 0, .2);
+    }
+
+    /* Card 2: Lime / yellow-green */
+    .fw-sc:nth-child(2) {
+      background: linear-gradient(140deg, #7FB800 0%, #A5C918 55%, #C5E938 100%);
+      box-shadow: 0 8px 32px rgba(127, 184, 0, .50), 0 2px 8px rgba(0, 0, 0, .15);
+    }
+
+    /* Card 3: Teal emerald */
+    .fw-sc:nth-child(3) {
+      background: linear-gradient(140deg, #0D6B42 0%, #158A56 55%, #22B073 100%);
+      box-shadow: 0 8px 32px rgba(13, 107, 66, .55), 0 2px 8px rgba(0, 0, 0, .2);
+    }
+
+    /* Card 4: Soft sage / mint */
+    .fw-sc:nth-child(4) {
+      background: linear-gradient(140deg, #1A6B45 0%, #2E9660 55%, #4FC48A 100%);
+      box-shadow: 0 8px 32px rgba(26, 107, 69, .50), 0 2px 8px rgba(0, 0, 0, .18);
+    }
+
+    /* Decorative blob on each card */
+    .fw-sc::before {
+      content: '';
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .10);
+      top: -28px;
+      right: -28px;
+      pointer-events: none;
+    }
+
+    .fw-sc::after {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .07);
+      bottom: -15px;
+      left: 18px;
+      pointer-events: none;
+    }
+
+    .fw-sc-accent {
+      display: none;
+    }
+
+    .fw-sc-lbl {
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, .75);
+      margin-bottom: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Card 2 (lime) gets darker text for contrast */
+    .fw-sc:nth-child(2) .fw-sc-lbl {
+      color: rgba(20, 50, 0, .70);
+    }
+
+    .fw-sc-val {
+      font-size: 32px;
+      line-height: 1;
+      color: #ffffff;
+      -webkit-text-fill-color: #ffffff;
+      background: none;
+      animation: none;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+    }
+
+    /* Card 2 (lime) number in dark green */
+    .fw-sc:nth-child(2) .fw-sc-val {
+      color: #112E00;
+      -webkit-text-fill-color: #112E00;
+      text-shadow: none;
+    }
+
+    .fw-sc-meta {
+      font-size: 11px;
+      margin-top: 8px;
+      color: rgba(255, 255, 255, .70);
+      position: relative;
+      z-index: 1;
+    }
+
+    .fw-sc:nth-child(2) .fw-sc-meta {
+      color: rgba(15, 40, 0, .65);
+    }
+
+    .fw-sc-bar {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 13px;
+      background: rgba(255, 255, 255, .18);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fw-sc:nth-child(2) .fw-sc-bar {
+      background: rgba(0, 0, 0, .12);
+    }
+
+    .fw-sc-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .55) !important;
+    }
+
+    .fw-sc:nth-child(2) .fw-sc-fill {
+      background: rgba(0, 0, 0, .3) !important;
+    }
+
+    /* ── Cards / Tables ── */
+    .fw-two {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 14px;
+    }
+
+    .fw-card {
+      background: rgba(255, 255, 255, .055);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(197, 233, 56, .14);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .18);
+    }
+
+    .fw-ch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .fw-ct {
+      font-size: 15px;
+      color: #D4F5E0;
+      letter-spacing: -0.01em;
+      font-weight: 600;
+    }
+
+    .fw-chips {
+      display: flex;
+      gap: 5px;
+    }
+
+    .fw-chip {
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: var(--fw-t3);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .fw-chip.on {
+      background: linear-gradient(135deg, #1C5C38, #3AAF72, #C5E938);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .fw-tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .fw-tbl th {
+      font-size: 10px;
+      color: rgba(180, 230, 195, .75);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      padding: 10px 16px;
+      text-align: left;
+      background: rgba(255, 255, 255, .025);
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .fw-tbl td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+      font-size: 12.5px;
+      color: rgba(210, 245, 220, .88);
+    }
+
+    .fw-tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .fw-tbl tbody tr {
+      cursor: pointer;
+      transition: background .12s;
+    }
+
+    .fw-tbl tbody tr:hover {
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .irow,
+    .fw-irow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .thumb,
+    .fw-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, rgba(28, 92, 56, .2), rgba(58, 175, 114, .2));
+      border: 1px solid rgba(58, 175, 114, .25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .iname,
+    .fw-iname {
+      font-size: 13px;
+      font-weight: 600;
+      color: #E8FAF0;
+    }
+
+    .iloc,
+    .fw-iloc {
+      font-size: 11px;
+      color: rgba(160, 215, 180, .65);
+    }
+
+    .act-link,
+    .fw-act-link {
+      font-size: 12px;
+      color: #86efac;
+      cursor: pointer;
+    }
+
+    .empty-state,
+    .fw-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      color: var(--fw-t3);
+      gap: 10px;
+    }
+
+    .empty-state p,
+    .fw-empty p {
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* ── Badges ── */
+    .badge,
+    .fw-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .bdot2,
+    .fw-bdot2 {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .b-found,
+    .fw-b-found {
+      background: rgba(28, 92, 56, .22);
+      color: #86efac;
+      border: 1px solid rgba(58, 175, 114, .35);
+    }
+
+    .b-found .bdot2,
+    .fw-b-found .fw-bdot2 {
+      background: #86efac;
+    }
+
+    .b-lost,
+    .fw-b-lost {
+      background: rgba(220, 38, 38, .15);
+      color: #f87171;
+      border: 1px solid rgba(220, 38, 38, .25);
+    }
+
+    .b-lost .bdot2,
+    .fw-b-lost .fw-bdot2 {
+      background: #f87171;
+    }
+
+    .b-pend,
+    .fw-b-pend {
+      background: rgba(217, 119, 6, .18);
+      color: #fbbf24;
+      border: 1px solid rgba(217, 119, 6, .3);
+    }
+
+    .b-pend .bdot2,
+    .fw-b-pend .fw-bdot2 {
+      background: #fbbf24;
+    }
+
+    .b-ret,
+    .fw-b-ret {
+      background: rgba(13, 148, 136, .18);
+      color: #5eead4;
+      border: 1px solid rgba(13, 148, 136, .3);
+    }
+
+    .b-ret .bdot2,
+    .fw-b-ret .fw-bdot2 {
+      background: #5eead4;
+    }
+
+    .b-clm,
+    .fw-b-clm {
+      background: rgba(197, 233, 56, .12);
+      color: #C5E938;
+      border: 1px solid rgba(197, 233, 56, .25);
+    }
+
+    .b-clm .bdot2,
+    .fw-b-clm .fw-bdot2 {
+      background: #C5E938;
+    }
+
+    /* ── Pending claims list ── */
+    .fw-rc,
+    .rc {
+      padding: 12px;
+    }
+
+    .ci,
+    .fw-ci {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--fw-glass-border-soft);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .ci:last-child,
+    .fw-ci:last-child {
+      margin-bottom: 0;
+    }
+
+    .citop,
+    .fw-citop {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .cava,
+    .fw-cava {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1C5C38, #C5E938);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .cname,
+    .fw-cname {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fw-t1);
+    }
+
+    .ctime,
+    .fw-ctime {
+      margin-left: auto;
+      font-size: 10.5px;
+      color: var(--fw-t3);
+    }
+
+    .cfor,
+    .fw-cfor {
+      font-size: 11.5px;
+      color: var(--fw-t3);
+      margin-bottom: 10px;
+    }
+
+    .cbtns,
+    .fw-cbtns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .cbtn,
+    .fw-cbtn {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all .12s;
+    }
+
+    .cb-ok,
+    .fw-cb-ok {
+      background: rgba(22, 163, 74, .15);
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, .25);
+    }
+
+    .cb-ok:hover,
+    .fw-cb-ok:hover {
+      background: rgba(22, 163, 74, .28);
+    }
+
+    .cb-no,
+    .fw-cb-no {
+      background: rgba(220, 38, 38, .15);
+      color: #f87171;
+      border-color: rgba(248, 113, 113, .25);
+    }
+
+    .cb-no:hover,
+    .fw-cb-no:hover {
+      background: rgba(220, 38, 38, .28);
+    }
+
+    .cb-view,
+    .fw-cb-view {
+      background: var(--fw-glass);
+      color: var(--fw-t2);
+      border-color: var(--fw-glass-border);
+      margin-left: auto;
+      font-size: 10.5px;
+    }
+
+    .cb-view:hover,
+    .fw-cb-view:hover {
+      background: var(--fw-glass-md);
+    }
+
+    /* ── Activity log ── */
+    .alist,
+    .fw-alist {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 16px;
+    }
+
+    .ai,
+    .fw-ai {
+      display: flex;
+      gap: 11px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .ai:last-child,
+    .fw-ai:last-child {
+      border-bottom: none;
+    }
+
+    .adot-col,
+    .fw-adot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 5px;
+    }
+
+    .adot,
+    .fw-adot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .atxt,
+    .fw-atxt {
+      font-size: 12.5px;
+      color: var(--fw-t2);
+      line-height: 1.5;
+    }
+
+    .atm,
+    .fw-atm {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+      margin-top: 3px;
+    }
+
+    /* ── Report form ── */
+    .fgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .fg.full {
+      grid-column: 1/-1;
+    }
+
+    .flbl,
+    .fw-flbl {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fw-t3);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .finput,
+    .fw-finput {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      font-size: 13px;
+      color: var(--fw-t1);
+      outline: none;
+      font-family: inherit;
+      transition: border .15s, box-shadow .15s;
+    }
+
+    .finput::placeholder,
+    .fw-finput::placeholder {
+      color: var(--fw-t3);
+    }
+
+    .finput:focus,
+    .fw-finput:focus {
+      border-color: rgba(58, 175, 114, .65);
+      box-shadow: 0 0 0 3px rgba(58, 175, 114, .18);
+    }
+
+    select.finput {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(226,232,240,0.45)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    select.finput option {
+      background: #071a0e;
+      color: #EEF6EC;
+    }
+
+    .fupload {
+      border: 2px dashed rgba(255, 255, 255, .14);
+      border-radius: 12px;
+      padding: 26px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, .03);
+      transition: all .15s;
+    }
+
+    .fupload:hover {
+      border-color: var(--fw-violet);
+      background: rgba(58, 175, 114, .08);
+    }
+
+    .fupicon {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(28, 92, 56, .25), rgba(58, 175, 114, .25));
+      border: 1px solid rgba(58, 175, 114, .4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .err {
+      font-size: 11px;
+      color: #f87171;
+      margin-top: 3px;
+      display: none;
+    }
+
+    .err.show {
+      display: block;
+    }
+
+    .ffoot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 14px 24px;
+      border-top: 1px solid var(--fw-glass-border-soft);
+      background: rgba(5, 10, 24, .45);
+    }
+
+    .btn-primary {
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, #1C5C38, #3AAF72 60%, #C5E938);
+      box-shadow: 0 4px 16px rgba(58, 175, 114, .45);
+    }
+
+    .btn-ghost {
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid var(--fw-glass-border);
+      color: var(--fw-t2);
+      transition: all .12s;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    /* ── Detail page ── */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 14px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .detail-left {
+      overflow-y: auto;
+    }
+
+    .detail-right {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(28, 92, 56, .18), rgba(58, 175, 114, .18));
+      border: 1px solid rgba(58, 175, 114, .25);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 170px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-shape {
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(197, 233, 56, .12);
+      filter: blur(20px);
+    }
+
+    .drows {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dr {
+      display: flex;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .dr:last-child {
+      border-bottom: none;
+    }
+
+    .dk {
+      font-size: 11px;
+      color: var(--fw-t3);
+      width: 120px;
+      flex-shrink: 0;
+      padding-top: 1px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .dv {
+      font-size: 13px;
+      color: var(--fw-t1);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .claim-panel {
+      background: var(--fw-glass);
+      border: 1px solid var(--fw-glass-border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .claim-panel-head {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .claim-inner {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .cfg {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Stepper ── */
+    .steps-row {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+    }
+
+    .step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      position: relative;
+      min-width: 0;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: calc(50% + 10px);
+      right: calc(-50% + 10px);
+      height: 1px;
+      background: var(--fw-glass-border);
+    }
+
+    .step.done::after {
+      background: linear-gradient(90deg, #1C5C38, #C5E938);
+    }
+
+    .snum {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      color: var(--fw-t3);
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .snum.done {
+      background: linear-gradient(135deg, #1C5C38, #C5E938);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .snum.cur {
+      background: rgba(58, 175, 114, .25);
+      color: #C5E938;
+      border-color: rgba(58, 175, 114, .5);
+    }
+
+    .slbl {
+      font-size: 9px;
+      color: var(--fw-t3);
+      text-align: center;
+      letter-spacing: .01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .slbl.cur {
+      color: #C5E938;
+      font-weight: 600;
+    }
+
+    .slbl.done {
+      color: #86efac;
+    }
+
+    /* ── Claim form buttons ── */
+    .next-btn {
+      width: 100%;
+      padding: 11px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid rgba(58, 175, 114, .5);
+      background: rgba(58, 175, 114, .18);
+      color: #C5E938;
+      margin-top: 4px;
+      transition: all .15s;
+      font-family: inherit;
+    }
+
+    .next-btn:hover {
+      background: rgba(58, 175, 114, .28);
+    }
+
+    .sub-btn {
+      width: 100%;
+      padding: 11px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, #1C5C38, #3AAF72, #C5E938);
+      color: #fff;
+      margin-top: 6px;
+      box-shadow: 0 4px 18px rgba(58, 175, 114, .5);
+      transition: all .2s;
+      font-family: inherit;
+    }
+
+    .sub-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(197, 233, 56, .55);
+    }
+
+    .sub-note {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ── Didit verification UI ── */
+    .didit-otp-wrap {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .didit-otp-wrap input {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 10px;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      color: var(--fw-t1);
+      outline: none;
+      transition: border .15s;
+      font-family: inherit;
+    }
+
+    .didit-otp-wrap input:focus {
+      border-color: rgba(28, 92, 56, .6);
+      box-shadow: 0 0 0 3px rgba(28, 92, 56, .18);
+    }
+
+    .didit-send-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid rgba(28, 92, 56, .45);
+      background: rgba(28, 92, 56, .15);
+      color: #86efac;
+      transition: all .12s;
+      white-space: nowrap;
+    }
+
+    .didit-send-btn:hover {
+      background: rgba(28, 92, 56, .28);
+    }
+
+    .didit-send-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .didit-verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(22, 163, 74, .18);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, .25);
+    }
+
+    .didit-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      min-height: 22px;
+      flex-wrap: wrap;
+    }
+
+    .didit-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(134, 239, 172, .2);
+      border-top-color: #86efac;
+      border-radius: 50%;
+      animation: dspin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes dspin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .didit-hint {
+      font-size: 11px;
+      color: var(--fw-t3);
+    }
+
+    /* ── Notification panel ── */
+    .notif-panel {
+      position: fixed;
+      top: 56px;
+      right: 14px;
+      width: 310px;
+      background: rgba(10, 18, 42, .97);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--fw-glass-border);
+      border-radius: 14px;
+      z-index: 100;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .55);
+      overflow: hidden;
+      display: none;
+    }
+
+    .notif-panel.show {
+      display: block;
+    }
+
+    .notif-head {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fw-t1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-display);
+    }
+
+    .notif-clear {
+      font-size: 11px;
+      color: #86efac;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .notif-item {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-title {
+      font-size: 12px;
+      color: var(--fw-t1);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .notif-time {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+    }
+
+    /* ── Notify Owner button ── */
+    .notif-notify-btn {
+      margin-top: 8px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, #1C5C38, #3AAF72 60%, #C5E938);
+      box-shadow: 0 3px 12px rgba(58, 175, 114, .4);
+      transition: all .2s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .notif-notify-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 18px rgba(197, 233, 56, .5);
+    }
+
+    .notif-notify-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .notif-notify-btn.sent {
+      background: rgba(22, 163, 74, .2);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, .25);
+      box-shadow: none;
+      cursor: default;
+    }
+
+    /* ── Detail status change dropdown ── */
+    .detail-status-select {
+      appearance: none;
+      padding: 6px 30px 6px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fw-t1);
+      cursor: pointer;
+      font-family: var(--font-display);
+      letter-spacing: -0.01em;
+      transition: border .15s, box-shadow .15s;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(134,239,172,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .detail-status-select:focus {
+      outline: none;
+      border-color: rgba(58, 175, 114, .65);
+      box-shadow: 0 0 0 3px rgba(58, 175, 114, .18);
+    }
+
+    .detail-status-select option {
+      background: #071a0e;
+      color: #EEF6EC;
+    }
+
+    .detail-status-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      margin-right: 8px;
+    }
+
+    .detail-status-label {
+      font-size: 10px;
+      color: var(--fw-t3);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-family: var(--font-display);
+      font-weight: 600;
+    }
+
+    body.light-theme .detail-status-select {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-color: rgba(39, 96, 65, 0.25);
+      color: #0D2211;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(39,96,65,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+
+    body.light-theme .detail-status-select option {
+      background: #f0f7ed;
+      color: #0D2211;
+    }
+
+    /* ── Toast ── */
+    .toast-wrap {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    .toast {
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fff;
+      pointer-events: auto;
+      animation: slidein .25s ease;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, .45);
+      min-width: 240px;
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      border: 1px solid rgba(74, 222, 128, .3);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, #991b1b, #b91c1c);
+      border: 1px solid rgba(248, 113, 113, .3);
+    }
+
+    .toast.info {
+      background: linear-gradient(135deg, #14532d, #1C5C38);
+      border: 1px solid rgba(74, 222, 128, .25);
+    }
+
+    @keyframes slidein {
+      from {
+        transform: translateX(80px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: linear-gradient(180deg, #0b1e10, #071509);
+      border: 1px solid var(--fw-glass-border);
+      border-radius: 16px;
+      width: 440px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+    }
+
+    .modal-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--fw-glass-border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--fw-t1);
+    }
+
+    .modal-close {
+      cursor: pointer;
+      color: var(--fw-t3);
+      font-size: 20px;
+      line-height: 1;
+      background: none;
+      border: none;
+    }
+
+    .modal-body {
+      padding: 18px;
+    }
+
+    .modal-foot {
+      padding: 12px 18px;
+      border-top: 1px solid var(--fw-glass-border-soft);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* ── LIGHT MODE COMPREHENSIVE FIXES ── */
+    body.light-theme {
+      --fw-bg: #F0F7ED;
+      --fw-t1: #0D2211;
+      --fw-t2: #1A4028;
+      --fw-t3: #4A7A5A;
+      --fw-glass: rgba(255, 255, 255, 0.92);
+      --fw-glass-md: #D8EED8;
+      --fw-glass-border: rgba(39, 96, 65, 0.25);
+      --fw-glass-border-soft: rgba(39, 96, 65, 0.15);
+    }
+
+    body.light-theme .fw-app::before {
+      background: radial-gradient(30% 25% at 20% 25%, rgba(58, 175, 114, .2), transparent 70%),
+        radial-gradient(28% 22% at 75% 70%, rgba(28, 92, 56, .15), transparent 70%),
+        radial-gradient(25% 20% at 50% 50%, rgba(100, 190, 130, .1), transparent 70%);
+    }
+
+    body.light-theme .fw-app::after {
+      background: radial-gradient(32% 26% at 80% 20%, rgba(197, 233, 56, .15), transparent 70%),
+        radial-gradient(30% 24% at 15% 80%, rgba(39, 96, 65, .1), transparent 70%);
+      mix-blend-mode: normal;
+    }
+
+    /* Sidebar */
+    body.light-theme .fw-side {
+      background: #276041;
+      border-right: none;
+    }
+
+    body.light-theme .fw-brand-wrap {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    body.light-theme .fw-side-foot {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    body.light-theme .fw-brand-name {
+      color: #FFFFFF;
+    }
+
+    body.light-theme .fw-brand-sub {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    body.light-theme .fw-brand-logo {
+      background: #C5E938;
+      box-shadow: 0 4px 14px rgba(197, 233, 56, 0.4);
+    }
+
+    body.light-theme .fw-brand-logo svg path {
+      fill: #1C5C38;
+    }
+
+    body.light-theme .fw-brand-logo::after {
+      border-color: #276041;
+    }
+
+    body.light-theme .fw-nl {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    body.light-theme .fw-ni {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    body.light-theme .fw-ni:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    body.light-theme .fw-ni.on {
+      background: #C5E938;
+      color: #112E1E;
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+    body.light-theme .fw-uname {
+      color: #FFFFFF;
+    }
+
+    body.light-theme .fw-urole {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    body.light-theme .fw-ava {
+      background: linear-gradient(135deg, #C5E938, #86D45A);
+      color: #1C5C38;
+    }
+
+    body.light-theme #theme-toggle {
+      color: rgba(255, 255, 255, 0.85);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.light-theme #theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    body.light-theme .fw-side-foot button[onclick="logout()"] {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      background: rgba(220, 38, 38, 0.2) !important;
+      color: #fca5a5 !important;
+    }
+
+    /* Topbar */
+    body.light-theme .fw-main {
+      background: transparent;
+    }
+
+    body.light-theme .fw-topbar {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-bottom: 1px solid rgba(39, 96, 65, 0.12) !important;
+      box-shadow: 0 1px 8px rgba(28, 92, 56, .06) !important;
+    }
+
+    body.light-theme .fw-ptitle {
+      background: linear-gradient(92deg, #0D2211 0%, #276041 50%, #1C5C38 100%) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      animation: none !important;
+    }
+
+    body.light-theme .fw-serif {
+      color: #276041 !important;
+    }
+
+    body.light-theme .fw-psub {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .fw-srch {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .fw-srch input {
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .fw-srch input::placeholder {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .fw-bell {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      color: #276041 !important;
+    }
+
+    body.light-theme .fw-nbadge {
+      background: #dc2626 !important;
+    }
+
+    /* Primary buttons */
+    body.light-theme .fw-btn-primary {
+      background: #276041 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 10px rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .fw-btn-primary:hover {
+      background: #1B452F !important;
+    }
+
+    body.light-theme .btn-primary {
+      background: linear-gradient(135deg, #276041, #3AAF72) !important;
+      color: #fff !important;
+      box-shadow: 0 3px 12px rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .shimmer-bar {
+      background: linear-gradient(90deg, transparent, #276041 25%, #C5E938 50%, #276041 75%, transparent);
+    }
+
+    /* Stat cards — keep solid cards in light theme too */
+    body.light-theme .fw-sc {
+      border: none !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(1) {
+      background: linear-gradient(140deg, #1B5E3B 0%, #2D8A5A 60%, #3AAF72 100%) !important;
+      box-shadow: 0 6px 24px rgba(29, 94, 59, .40) !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(2) {
+      background: linear-gradient(140deg, #7FB800 0%, #A5C918 55%, #C5E938 100%) !important;
+      box-shadow: 0 6px 24px rgba(127, 184, 0, .40) !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(3) {
+      background: linear-gradient(140deg, #0D6B42 0%, #158A56 55%, #22B073 100%) !important;
+      box-shadow: 0 6px 24px rgba(13, 107, 66, .40) !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(4) {
+      background: linear-gradient(140deg, #1A6B45 0%, #2E9660 55%, #4FC48A 100%) !important;
+      box-shadow: 0 6px 24px rgba(26, 107, 69, .38) !important;
+    }
+
+    body.light-theme .fw-sc-lbl {
+      color: rgba(255, 255, 255, .78) !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(2) .fw-sc-lbl {
+      color: rgba(20, 50, 0, .70) !important;
+    }
+
+    body.light-theme .fw-sc-val {
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+      background: none !important;
+      animation: none !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(2) .fw-sc-val {
+      color: #112E00 !important;
+      -webkit-text-fill-color: #112E00 !important;
+    }
+
+    body.light-theme .fw-sc-meta {
+      color: rgba(255, 255, 255, .68) !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(2) .fw-sc-meta {
+      color: rgba(15, 40, 0, .65) !important;
+    }
+
+    body.light-theme .fw-sc-bar {
+      background: rgba(255, 255, 255, .18) !important;
+    }
+
+    body.light-theme .fw-sc:nth-child(2) .fw-sc-bar {
+      background: rgba(0, 0, 0, .12) !important;
+    }
+
+    /* Cards */
+    body.light-theme .fw-card {
+      background: #ffffff !important;
+      border: 1px solid rgba(39, 96, 65, 0.14) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 4px 24px rgba(28, 92, 56, 0.10), 0 1px 4px rgba(0, 0, 0, .04) !important;
+    }
+
+    body.light-theme .fw-ch {
+      background: #F5FBF2 !important;
+      border-bottom: 1px solid rgba(39, 96, 65, 0.10) !important;
+      padding: 15px 20px !important;
+    }
+
+    body.light-theme .fw-ct {
+      color: #0D2211 !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    body.light-theme .fw-chip {
+      color: #276041 !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      background: #EBF6E8 !important;
+      font-weight: 600 !important;
+    }
+
+    body.light-theme .fw-chip.on {
+      background: linear-gradient(135deg, #1B5E3B, #3AAF72) !important;
+      color: #fff !important;
+      border-color: transparent !important;
+      box-shadow: 0 2px 8px rgba(58, 175, 114, .35) !important;
+    }
+
+    /* Table */
+    body.light-theme .fw-tbl th {
+      background: #b6dc91 !important;
+      color: #3A7A52 !important;
+      font-size: 10.5px !important;
+      letter-spacing: .13em !important;
+    }
+
+    body.light-theme .fw-tbl td {
+      color: #1A3D28 !important;
+      border-bottom-color: rgba(39, 96, 65, 0.08) !important;
+      font-size: 13px !important;
+    }
+
+    body.light-theme .fw-tbl tbody tr:hover {
+      background: rgba(197, 233, 56, 0.08) !important;
+    }
+
+    body.light-theme .fw-iname,
+    body.light-theme .iname {
+      color: #0A1E14 !important;
+      font-weight: 700 !important;
+    }
+
+    body.light-theme .fw-iloc,
+    body.light-theme .iloc {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .act-link,
+    body.light-theme .fw-act-link {
+      color: #1B5E3B !important;
+      font-weight: 600 !important;
+    }
+
+    /* Claims panel */
+    body.light-theme .ci,
+    body.light-theme .fw-ci {
+      background: rgba(240, 247, 237, 0.9) !important;
+      border-color: rgba(39, 96, 65, 0.2) !important;
+    }
+
+    body.light-theme .cname,
+    body.light-theme .fw-cname {
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .cfor,
+    body.light-theme .fw-cfor {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .ctime,
+    body.light-theme .fw-ctime {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .cb-view,
+    body.light-theme .fw-cb-view {
+      color: #276041 !important;
+    }
+
+    /* Activity */
+    body.light-theme .atxt,
+    body.light-theme .fw-atxt {
+      color: #0A1E14 !important;
+      font-weight: 500 !important;
+    }
+
+    body.light-theme .atm,
+    body.light-theme .fw-atm {
+      color: #5A8A6A !important;
+    }
+
+    body.light-theme .fw-ai,
+    body.light-theme .ai {
+      border-bottom-color: rgba(39, 96, 65, 0.12) !important;
+    }
+
+    /* Detail page */
+    body.light-theme .dv {
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .dk {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .dr {
+      border-bottom-color: rgba(39, 96, 65, 0.12) !important;
+    }
+
+    body.light-theme .hero {
+      background: linear-gradient(135deg, rgba(197, 233, 56, 0.15), rgba(58, 175, 114, 0.12)) !important;
+      border-color: rgba(58, 175, 114, 0.2) !important;
+    }
+
+    body.light-theme .claim-panel {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(39, 96, 65, 0.2) !important;
+    }
+
+    body.light-theme .claim-panel-head {
+      background: rgba(235, 247, 230, 0.9) !important;
+      border-bottom-color: rgba(39, 96, 65, 0.15) !important;
+    }
+
+    /* Form inputs */
+    body.light-theme .finput,
+    body.light-theme .fw-finput {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .finput::placeholder {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .finput:focus {
+      border-color: #276041 !important;
+      box-shadow: 0 0 0 3px rgba(39, 96, 65, 0.15) !important;
+    }
+
+    body.light-theme select.finput option {
+      background: #fff !important;
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .flbl,
+    body.light-theme .fw-flbl {
+      color: #276041 !important;
+    }
+
+    body.light-theme .fupload {
+      background: rgba(240, 247, 237, 0.8) !important;
+      border-color: rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .fupload:hover {
+      background: rgba(197, 233, 56, 0.12) !important;
+    }
+
+    body.light-theme .ffoot {
+      background: rgba(225, 242, 220, 0.9) !important;
+      border-top-color: rgba(39, 96, 65, 0.15) !important;
+    }
+
+    body.light-theme .btn-ghost {
+      color: #276041 !important;
+      border-color: rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .btn-ghost:hover {
+      background: rgba(39, 96, 65, 0.08) !important;
+    }
+
+    /* Stepper */
+    body.light-theme .snum {
+      background: #fff !important;
+      color: #4A7A5A !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+    }
+
+    body.light-theme .slbl {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .slbl.cur {
+      color: #276041 !important;
+    }
+
+    body.light-theme .sub-note {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .next-btn {
+      background: rgba(39, 96, 65, 0.12) !important;
+      border-color: rgba(39, 96, 65, 0.4) !important;
+      color: #276041 !important;
+    }
+
+    body.light-theme .next-btn:hover {
+      background: rgba(39, 96, 65, 0.2) !important;
+    }
+
+    body.light-theme .didit-send-btn {
+      background: rgba(39, 96, 65, 0.12) !important;
+      border-color: rgba(39, 96, 65, 0.35) !important;
+      color: #276041 !important;
+    }
+
+    body.light-theme .didit-send-btn:hover {
+      background: rgba(39, 96, 65, 0.22) !important;
+    }
+
+    /* Empty states */
+    body.light-theme .empty-state p,
+    body.light-theme .fw-empty p {
+      color: #4A7A5A !important;
+    }
+
+    /* Modal */
+    body.light-theme .modal {
+      background: linear-gradient(180deg, #f0f7ed, #e6f2e0) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    body.light-theme .modal-title {
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .modal-close {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .modal-head {
+      border-bottom-color: rgba(39, 96, 65, 0.15) !important;
+    }
+
+    body.light-theme .modal-foot {
+      border-top-color: rgba(39, 96, 65, 0.15) !important;
+      background: rgba(235, 247, 230, 0.7) !important;
+    }
+
+    /* Notification panel */
+    body.light-theme .notif-panel {
+      background: rgba(240, 247, 237, 0.98) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    body.light-theme .notif-head {
+      color: #0D2211 !important;
+      border-bottom-color: rgba(39, 96, 65, 0.15) !important;
+      background: rgba(225, 242, 220, 0.9) !important;
+    }
+
+    body.light-theme .notif-clear {
+      color: #276041 !important;
+    }
+
+    body.light-theme .notif-title {
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .notif-time {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .notif-item {
+      border-bottom-color: rgba(39, 96, 65, 0.1) !important;
+    }
+
+    /* Radio type cards */
+    body.light-theme #lbl-type-found,
+    body.light-theme #lbl-type-lost {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      color: #0D2211 !important;
+    }
+
+    body.light-theme #lbl-type-found div:first-child,
+    body.light-theme #lbl-type-lost div:first-child {
+      color: #0D2211 !important;
+    }
+
+    /* Theme icon */
+    body:not(.light-theme) #theme-icon-sun {
+      display: none;
+    }
+
+    body.light-theme #theme-icon-moon {
+      display: none;
+    }
+
+    body.light-theme #theme-icon-sun {
+      display: inline;
+    }
+
+    body.light-theme #detail-badge {
+      filter: none !important;
+    }
+
+    /* ── Global body text color ── */
+    body.light-theme,
+    body.light-theme p,
+    body.light-theme span,
+    body.light-theme div,
+    body.light-theme li,
+    body.light-theme a,
+    body.light-theme label {
+      color: #0D2211;
+    }
+
+    /* ── Serif / italic accent text ── */
+    body.light-theme .fw-serif,
+    body.light-theme .fw-ptitle em {
+      color: #1B5E3B !important;
+    }
+
+    /* ── Card title ── */
+    body.light-theme .fw-ct {
+      color: #0D2211 !important;
+    }
+
+    /* ── Nav item count ── */
+    body.light-theme .fw-ncount {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    /* ── Topbar subtitle (.fw-psub) ── */
+    body.light-theme .fw-psub {
+      color: #4A7A5A !important;
+    }
+
+    /* ── Table cell & header text ── */
+    body.light-theme .fw-tbl td {
+      color: #1A3D28 !important;
+    }
+
+    body.light-theme .fw-tbl th {
+      color: #2E5A3A !important;
+    }
+
+    /* ── Item name and location (hardcoded colors) ── */
+    body.light-theme .fw-iname,
+    body.light-theme .iname {
+      color: #0A1E14 !important;
+    }
+
+    body.light-theme .fw-iloc,
+    body.light-theme .iloc {
+      color: #3A6A4A !important;
+    }
+
+    /* ── Badges — darken neon text colors for readability ── */
+    body.light-theme .b-found,
+    body.light-theme .fw-b-found {
+      background: rgba(22, 101, 52, 0.12) !important;
+      color: #166534 !important;
+      border-color: rgba(22, 101, 52, 0.3) !important;
+    }
+
+    body.light-theme .b-found .bdot2,
+    body.light-theme .fw-b-found .fw-bdot2 {
+      background: #166534 !important;
+    }
+
+    body.light-theme .b-lost,
+    body.light-theme .fw-b-lost {
+      background: rgba(185, 28, 28, 0.10) !important;
+      color: #991B1B !important;
+      border-color: rgba(185, 28, 28, 0.25) !important;
+    }
+
+    body.light-theme .b-lost .bdot2,
+    body.light-theme .fw-b-lost .fw-bdot2 {
+      background: #991B1B !important;
+    }
+
+    body.light-theme .b-pend,
+    body.light-theme .fw-b-pend {
+      background: rgba(180, 83, 9, 0.10) !important;
+      color: #92400E !important;
+      border-color: rgba(180, 83, 9, 0.25) !important;
+    }
+
+    body.light-theme .b-pend .bdot2,
+    body.light-theme .fw-b-pend .fw-bdot2 {
+      background: #92400E !important;
+    }
+
+    body.light-theme .b-ret,
+    body.light-theme .fw-b-ret {
+      background: rgba(13, 148, 136, 0.10) !important;
+      color: #0F766E !important;
+      border-color: rgba(13, 148, 136, 0.25) !important;
+    }
+
+    body.light-theme .b-ret .bdot2,
+    body.light-theme .fw-b-ret .fw-bdot2 {
+      background: #0F766E !important;
+    }
+
+    body.light-theme .b-clm,
+    body.light-theme .fw-b-clm {
+      background: rgba(63, 98, 18, 0.10) !important;
+      color: #3F6212 !important;
+      border-color: rgba(63, 98, 18, 0.25) !important;
+    }
+
+    body.light-theme .b-clm .bdot2,
+    body.light-theme .fw-b-clm .fw-bdot2 {
+      background: #3F6212 !important;
+    }
+
+    /* ── Action links (View all →, act-link) ── */
+    body.light-theme .act-link,
+    body.light-theme .fw-act-link {
+      color: #1B5E3B !important;
+      font-weight: 600 !important;
+    }
+
+    /* ── Inline-styled accent text overrides ── */
+    /* "View all" link, upload label, and other inline green accents */
+    body.light-theme [style*="color:#86efac"],
+    body.light-theme [style*="color: #86efac"] {
+      color: #1B5E3B !important;
+    }
+
+    body.light-theme [style*="color:#4ade80"],
+    body.light-theme [style*="color: #4ade80"] {
+      color: #166534 !important;
+    }
+
+    body.light-theme [style*="color:#C5E938"],
+    body.light-theme [style*="color: #C5E938"] {
+      color: #3F6212 !important;
+    }
+
+    body.light-theme [style*="color:#fbbf24"],
+    body.light-theme [style*="color: #fbbf24"] {
+      color: #92400E !important;
+    }
+
+    body.light-theme [style*="color:#5eead4"],
+    body.light-theme [style*="color: #5eead4"] {
+      color: #0F766E !important;
+    }
+
+    /* Error / red accent — darken for contrast */
+    body.light-theme [style*="color:#f87171"],
+    body.light-theme [style*="color: #f87171"] {
+      color: #B91C1C !important;
+    }
+
+    /* ── Notification panel ── */
+    body.light-theme .notif-panel {
+      background: rgba(255, 255, 255, 0.98) !important;
+      border-color: rgba(39, 96, 65, 0.20) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    body.light-theme .notif-clear {
+      color: #1B5E3B !important;
+    }
+
+    /* ── Notification Notify Owner button ── */
+    body.light-theme .notif-notify-btn {
+      background: #276041 !important;
+      color: #fff !important;
+      box-shadow: 0 3px 12px rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .notif-notify-btn.sent {
+      background: rgba(22, 101, 52, 0.12) !important;
+      color: #166534 !important;
+      border-color: rgba(22, 101, 52, 0.3) !important;
+    }
+
+    /* ── Claim buttons (Approve / Reject / View Proof) ── */
+    body.light-theme .cb-ok,
+    body.light-theme .fw-cb-ok {
+      background: rgba(22, 101, 52, 0.10) !important;
+      color: #166534 !important;
+      border-color: rgba(22, 101, 52, 0.3) !important;
+    }
+
+    body.light-theme .cb-ok:hover,
+    body.light-theme .fw-cb-ok:hover {
+      background: rgba(22, 101, 52, 0.20) !important;
+    }
+
+    body.light-theme .cb-no,
+    body.light-theme .fw-cb-no {
+      background: rgba(185, 28, 28, 0.08) !important;
+      color: #991B1B !important;
+      border-color: rgba(185, 28, 28, 0.25) !important;
+    }
+
+    body.light-theme .cb-no:hover,
+    body.light-theme .fw-cb-no:hover {
+      background: rgba(185, 28, 28, 0.18) !important;
+    }
+
+    body.light-theme .cb-view,
+    body.light-theme .fw-cb-view {
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #276041 !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+    }
+
+    /* ── Stepper labels ── */
+    body.light-theme .slbl {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .slbl.cur {
+      color: #276041 !important;
+      font-weight: 700 !important;
+    }
+
+    body.light-theme .slbl.done {
+      color: #166534 !important;
+    }
+
+    body.light-theme .snum {
+      background: #fff !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .snum.done {
+      background: linear-gradient(135deg, #276041, #3AAF72) !important;
+      color: #fff !important;
+      border-color: transparent !important;
+    }
+
+    body.light-theme .snum.cur {
+      background: rgba(39, 96, 65, 0.12) !important;
+      color: #276041 !important;
+      border-color: rgba(39, 96, 65, 0.4) !important;
+    }
+
+    /* ── Next / Submit buttons in claim flow ── */
+    body.light-theme .next-btn {
+      background: rgba(39, 96, 65, 0.10) !important;
+      border-color: rgba(39, 96, 65, 0.35) !important;
+      color: #1B5E3B !important;
+      font-weight: 700 !important;
+    }
+
+    body.light-theme .next-btn:hover {
+      background: rgba(39, 96, 65, 0.18) !important;
+    }
+
+    body.light-theme .sub-btn {
+      background: linear-gradient(135deg, #276041, #3AAF72) !important;
+      color: #fff !important;
+      box-shadow: 0 4px 18px rgba(39, 96, 65, 0.3) !important;
+    }
+
+    body.light-theme .sub-note {
+      color: #4A7A5A !important;
+    }
+
+    /* ── OTP / Didit verification ── */
+    body.light-theme .didit-otp-wrap input {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .didit-otp-wrap input:focus {
+      border-color: #276041 !important;
+      box-shadow: 0 0 0 3px rgba(39, 96, 65, 0.15) !important;
+    }
+
+    body.light-theme .didit-send-btn {
+      background: rgba(39, 96, 65, 0.10) !important;
+      border-color: rgba(39, 96, 65, 0.35) !important;
+      color: #1B5E3B !important;
+    }
+
+    body.light-theme .didit-send-btn:hover {
+      background: rgba(39, 96, 65, 0.20) !important;
+    }
+
+    body.light-theme .didit-verified-badge {
+      background: rgba(22, 101, 52, 0.10) !important;
+      color: #166534 !important;
+      border-color: rgba(22, 101, 52, 0.25) !important;
+    }
+
+    body.light-theme .didit-hint {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .didit-spinner {
+      border-color: rgba(39, 96, 65, 0.2) !important;
+      border-top-color: #276041 !important;
+    }
+
+    /* ── File upload area ── */
+    body.light-theme .fupload {
+      background: rgba(240, 247, 237, 0.8) !important;
+      border-color: rgba(39, 96, 65, 0.30) !important;
+    }
+
+    body.light-theme .fupload:hover {
+      background: rgba(197, 233, 56, 0.12) !important;
+      border-color: #276041 !important;
+    }
+
+    body.light-theme .fupicon {
+      background: linear-gradient(135deg, rgba(39, 96, 65, 0.12), rgba(58, 175, 114, 0.15)) !important;
+      border-color: rgba(39, 96, 65, 0.25) !important;
+    }
+
+    /* ── Form footer ── */
+    body.light-theme .ffoot {
+      background: rgba(235, 247, 230, 0.9) !important;
+      border-top-color: rgba(39, 96, 65, 0.12) !important;
+    }
+
+    /* ── Error text ── */
+    body.light-theme .err {
+      color: #B91C1C !important;
+    }
+
+    /* ── Placeholders for all inputs ── */
+    body.light-theme .finput::placeholder,
+    body.light-theme .fw-finput::placeholder,
+    body.light-theme input::placeholder,
+    body.light-theme textarea::placeholder {
+      color: #6B9B7A !important;
+    }
+
+    /* ── Select dropdowns ── */
+    body.light-theme select.finput,
+    body.light-theme .detail-status-select,
+    body.light-theme .fselect {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      color: #0D2211 !important;
+    }
+
+    body.light-theme select.finput option,
+    body.light-theme .detail-status-select option,
+    body.light-theme .fselect option {
+      background: #fff !important;
+      color: #0D2211 !important;
+    }
+
+    /* ── Chip unselected state ── */
+    body.light-theme .fw-chip {
+      color: #276041 !important;
+      border-color: rgba(39, 96, 65, 0.22) !important;
+      background: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* ── Modal overlay & content ── */
+    body.light-theme .modal-overlay {
+      background: rgba(13, 34, 17, 0.35) !important;
+    }
+
+    body.light-theme .modal {
+      background: linear-gradient(180deg, #f5fbf2, #eaf5e5) !important;
+      border-color: rgba(39, 96, 65, 0.20) !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    body.light-theme .modal-title {
+      color: #0D2211 !important;
+    }
+
+    body.light-theme .modal-close {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .modal-body {
+      color: #1A3D28 !important;
+    }
+
+    body.light-theme .modal-body p,
+    body.light-theme .modal-body div,
+    body.light-theme .modal-body span,
+    body.light-theme .modal-body label {
+      color: #1A3D28 !important;
+    }
+
+    /* ── Thumb / item icon placeholder ── */
+    body.light-theme .thumb,
+    body.light-theme .fw-thumb {
+      background: linear-gradient(135deg, rgba(39, 96, 65, 0.08), rgba(58, 175, 114, 0.10)) !important;
+      border-color: rgba(39, 96, 65, 0.20) !important;
+    }
+
+    /* ── Detail page hero ── */
+    body.light-theme .hero {
+      background: linear-gradient(135deg, rgba(197, 233, 56, 0.12), rgba(58, 175, 114, 0.10)) !important;
+      border-color: rgba(39, 96, 65, 0.18) !important;
+    }
+
+    /* ── Detail page key-value rows ── */
+    body.light-theme .dk {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .dv {
+      color: #0D2211 !important;
+    }
+
+    /* ── Claim panel ── */
+    body.light-theme .claim-panel {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(39, 96, 65, 0.18) !important;
+    }
+
+    body.light-theme .claim-panel-head {
+      background: rgba(240, 247, 237, 0.95) !important;
+      border-bottom-color: rgba(39, 96, 65, 0.12) !important;
+    }
+
+    body.light-theme .claim-panel-head .fw-ct {
+      color: #0D2211 !important;
+    }
+
+    /* ── Empty states ── */
+    body.light-theme .empty-state,
+    body.light-theme .fw-empty {
+      color: #4A7A5A !important;
+    }
+
+    body.light-theme .empty-state p,
+    body.light-theme .fw-empty p {
+      color: #4A7A5A !important;
+    }
+
+    /* ── Toast notifications ── */
+    body.light-theme .toast.success {
+      background: linear-gradient(135deg, #166534, #15803d) !important;
+      color: #fff !important;
+    }
+
+    body.light-theme .toast.error {
+      background: linear-gradient(135deg, #7F1D1D, #991B1B) !important;
+      color: #fff !important;
+    }
+
+    body.light-theme .toast.info {
+      background: linear-gradient(135deg, #0D2211, #276041) !important;
+      color: #fff !important;
+    }
+
+    /* ── Scrollbar in light mode ── */
+    body.light-theme ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    body.light-theme ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    body.light-theme ::-webkit-scrollbar-thumb {
+      background: rgba(39, 96, 65, 0.18);
+      border-radius: 3px;
+    }
+
+    body.light-theme ::-webkit-scrollbar-thumb:hover {
+      background: rgba(39, 96, 65, 0.30);
+    }
+
+    /* ── Bell dot in light mode ── */
+    body.light-theme .fw-bdot {
+      border-color: #F0F7ED !important;
+    }
+
+    /* ── Brand logo after dot border ── */
+    body.light-theme .fw-brand-logo::after {
+      border-color: #276041 !important;
+    }
+
+    /* ── Forgot password link (from login, if also used in main) ── */
+    body.light-theme .forgot {
+      color: #1B5E3B !important;
+    }
+
+    body.light-theme .forgot:hover {
+      color: #276041 !important;
+    }
+
+    /* ── Content area general text ── */
+    body.light-theme .fw-content {
+      color: #0D2211 !important;
+    }
+
+    /* ── Search input icon ── */
+    body.light-theme .fw-srch svg {
+      color: #4A7A5A !important;
+    }
+
+    /* ── Activity dot glow — tone down in light mode ── */
+    body.light-theme .adot,
+    body.light-theme .fw-adot {
+      box-shadow: none !important;
+    }
+
+    /* ── Ensure all label text is dark ── */
+    body.light-theme .flbl,
+    body.light-theme .fw-flbl {
+      color: #276041 !important;
+    }
+
+    /* ── Status select: ensure text is dark ── */
+    body.light-theme .detail-status-label {
+      color: #4A7A5A !important;
+    }
+
+    /* ── Card header separator and background ── */
+    body.light-theme .fw-ch {
+      background: #F5FBF2 !important;
+      border-bottom: 1px solid rgba(39, 96, 65, 0.10) !important;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+
+<body>
+  <div class="shimmer-bar"></div>
+  <div class="fw-app">
+
+    <!-- SIDEBAR -->
+    <aside class="fw-side">
+      <div class="fw-brand-wrap">
+        <div class="fw-brand">
+          <div class="fw-brand-logo">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L13 7H17L14 11L15.5 16L10 13L4.5 16L6 11L3 7H7L10 2Z" fill="white" opacity=".9" />
+            </svg>
+          </div>
+          <div>
+            <div class="fw-brand-name">FoundWise</div>
+            <div class="fw-brand-sub">Lost &amp; Found System</div>
+          </div>
+        </div>
+      </div>
+      <nav class="fw-nav">
+        <div class="fw-nl">Main</div>
+        <div class="fw-ni on" id="nav-dash" onclick="goPage('dashboard')"><svg width="18" height="18"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9"></rect>
+            <rect x="14" y="3" width="7" height="5"></rect>
+            <rect x="14" y="12" width="7" height="9"></rect>
+            <rect x="3" y="16" width="7" height="5"></rect>
+          </svg> Dashboard</div>
+        <div class="fw-ni" id="nav-items" onclick="goPage('items')"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+            </path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg> All Items <span class="fw-ncount" id="nav-item-count">0</span></div>
+        <div class="fw-ni" id="nav-report" onclick="goPage('report')"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg> Report Item</div>
+        <div class="fw-ni" id="nav-pending" onclick="goPage('pending')"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg> Pending Claims <span class="fw-nbadge" id="nav-pending-badge" style="display:none">0</span></div>
+        <div class="fw-nl">Insights</div>
+        <div class="fw-ni" id="nav-log" onclick="goPage('log')"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg> Activity Log</div>
+      </nav>
+      <div class="fw-side-foot">
+        <div style="padding:0 10px; margin-bottom:8px">
+          <button id="theme-toggle" onclick="toggleTheme()"
+            style="width:100%;padding:8px;border-radius:9px;border:1px solid var(--fw-glass-border-soft);background:transparent;color:var(--fw-t2);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s">
+            <span id="theme-icon-moon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M21.53 15.93c-.16-.27-.61-.69-1.73-.49a8.46 8.46 0 0 1-1.88.13 8.41 8.41 0 0 1-5.91-2.82 8.21 8.21 0 0 1-1.9-4.49 8.56 8.56 0 0 1 .33-3.48c.26-.85-.05-1.12-.22-1.26a1.19 1.19 0 0 0-1.23-.16A10.07 10.07 0 0 0 2.89 8.1a9.93 9.93 0 0 0 1.28 8.68 10.06 10.06 0 0 0 7.45 4.18 10.78 10.78 0 0 0 1.71.13 9.86 9.86 0 0 0 6.89-2.82 1.15 1.15 0 0 0 .31-1.24v-.1z" />
+                <path d="M19 4a1 1 0 0 1 1 1v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0V8h-1a1 1 0 1 1 0-2h1V5a1 1 0 0 1 1-1z"
+                  opacity=".7" />
+                <path
+                  d="M15 2a.75.75 0 0 1 .75.75v.5h.5a.75.75 0 0 1 0 1.5h-.5v.5a.75.75 0 0 1-1.5 0v-.5h-.5a.75.75 0 0 1 0-1.5h.5v-.5A.75.75 0 0 1 15 2z"
+                  opacity=".5" />
+              </svg>
+            </span>
+            <span id="theme-icon-sun" style="display:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+                <path
+                  d="M12 0a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V1a1 1 0 0 1 1-1zM12 20a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zM4.22 3.22a1 1 0 0 1 1.42 0l1.41 1.42A1 1 0 0 1 5.64 6.05L4.22 4.64a1 1 0 0 1 0-1.42zM17.36 16.36a1 1 0 0 1 1.41 0l1.42 1.41a1 1 0 1 1-1.42 1.42l-1.41-1.42a1 1 0 0 1 0-1.41zM0 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H1a1 1 0 0 1-1-1zM20 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1zM3.22 19.78a1 1 0 0 1 0-1.42l1.42-1.41a1 1 0 1 1 1.41 1.41l-1.42 1.42a1 1 0 0 1-1.41 0zM16.36 6.64a1 1 0 0 1 0-1.41l1.41-1.42a1 1 0 1 1 1.42 1.42l-1.42 1.41a1 1 0 0 1-1.41 0z"
+                  opacity=".7" />
+              </svg>
+            </span>
+            <span id="theme-label">Light Mode</span>
+          </button>
+        </div>
+        <div class="fw-urow">
+          <div class="fw-ava" id="user-ava">SK</div>
+          <div style="flex:1">
+            <div class="fw-uname" id="user-name">Sarah Kim</div>
+            <div class="fw-urole" id="user-role">Front Desk Admin</div>
+          </div>
+        </div>
+        <div style="padding:6px 10px 10px">
+          <button onclick="logout()"
+            style="width:100%;padding:7px;border-radius:9px;border:1px solid rgba(255,255,255,.10);background:rgba(220,38,38,.12);color:#f87171;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;">Sign
+            out</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="fw-main">
+
+      <!-- DASHBOARD -->
+      <div class="page on" id="page-dashboard" style="flex-direction:column;">
+        <div class="fw-topbar">
+          <div class="fw-tl">
+            <div class="fw-ptitle">Dash<em>board</em></div>
+            <div class="fw-psub" id="dash-date"></div>
+          </div>
+          <div class="fw-srch" style="display:flex;align-items:center;gap:6px"><svg width="15" height="15"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" style="color:var(--fw-t3)">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg> <input id="dash-search" placeholder="Search items..." oninput="filterItems()" /></div>
+          <button class="fw-bell" id="bell-btn" onclick="toggleNotif()"
+            style="display:flex;align-items:center;justify-content:center"><svg width="18" height="18"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg><span class="fw-bdot" id="bell-dot" style="display:none"></span></button>
+          <button class="fw-btn-primary" onclick="goPage('report')" style="display:flex;align-items:center;gap:6px"><svg
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg> Report Item</button>
+        </div>
+        <div class="fw-content">
+          <div class="fw-stats">
+            <div class="fw-sc">
+              <div class="fw-sc-accent" style="background:#2D8B5D"></div>
+              <div class="fw-sc-lbl">Total Items</div>
+              <div class="fw-sc-val" id="stat-total">0</div>
+              <div class="fw-sc-meta" id="stat-week">0 this week</div>
+              <div class="fw-sc-bar">
+                <div class="fw-sc-fill" id="bar-total"
+                  style="width:0%;background:linear-gradient(90deg,#2D8B5D,#C5E938)"></div>
+              </div>
+            </div>
+            <div class="fw-sc">
+              <div class="fw-sc-accent" style="background:#C5E938"></div>
+              <div class="fw-sc-lbl">Unclaimed</div>
+              <div class="fw-sc-val" id="stat-unclaimed">0</div>
+              <div class="fw-sc-meta">Needs review</div>
+              <div class="fw-sc-bar">
+                <div class="fw-sc-fill" id="bar-unclaimed"
+                  style="width:0%;background:linear-gradient(90deg,#A5C918,#C5E938)"></div>
+              </div>
+            </div>
+            <div class="fw-sc">
+              <div class="fw-sc-accent" style="background:#276041"></div>
+              <div class="fw-sc-lbl">Returned</div>
+              <div class="fw-sc-val" id="stat-returned">0</div>
+              <div class="fw-sc-meta">Successfully returned</div>
+              <div class="fw-sc-bar">
+                <div class="fw-sc-fill" id="bar-returned"
+                  style="width:0%;background:linear-gradient(90deg,#174E32,#276041)"></div>
+              </div>
+            </div>
+            <div class="fw-sc">
+              <div class="fw-sc-accent" style="background:#DDF247"></div>
+              <div class="fw-sc-lbl">Pending Claims</div>
+              <div class="fw-sc-val" id="stat-pending">0</div>
+              <div class="fw-sc-meta">Awaiting verification</div>
+              <div class="fw-sc-bar">
+                <div class="fw-sc-fill" id="bar-pending"
+                  style="width:0%;background:linear-gradient(90deg,#DDF247,#A5C918)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="fw-two">
+            <div class="fw-card">
+              <div class="fw-ch">
+                <div class="fw-ct">Recent Items</div>
+                <div class="fw-chips">
+                  <button class="fw-chip on" onclick="setChip(this,'all')">All</button>
+                  <button class="fw-chip" onclick="setChip(this,'found')">Found</button>
+                  <button class="fw-chip" onclick="setChip(this,'lost')">Lost</button>
+                  <button class="fw-chip" onclick="setChip(this,'returned')">Returned</button>
+                </div>
+              </div>
+              <div id="items-empty" class="empty-state" style="display:flex">
+                <p>No items yet. Report one to get started.</p>
+              </div>
+              <table class="fw-tbl" id="items-table" style="display:none">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="items-tbody"></tbody>
+              </table>
+            </div>
+            <div class="fw-card">
+              <div class="fw-ch">
+                <div class="fw-ct">Pending Claims</div>
+              </div>
+              <div class="rc" id="pending-claims-list">
+                <div class="empty-state" style="padding:24px 12px">
+                  <p>No pending claims yet.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fw-card">
+            <div class="fw-ch">
+              <div class="fw-ct">Activity Feed</div>
+              <span class="fw-act-link" onclick="goPage('log')"
+                style="font-size:11.5px;color:#86efac;cursor:pointer">View all &rarr;</span>
+            </div>
+            <div class="alist" id="activity-list">
+              <div class="empty-state" style="padding:20px 8px">
+                <div class="didit-spinner" style="margin-bottom:8px"></div>
+                <p>Loading activity…</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALL ITEMS -->
+      <div class="page" id="page-items" style="flex-direction:column;">
+        <div class="fw-topbar">
+          <div class="fw-tl">
+            <div class="fw-ptitle">All <em>Items</em></div>
+            <div class="fw-psub" id="items-page-sub">0 items total</div>
+          </div>
+          <div class="fw-srch" style="display:flex;align-items:center;gap:6px"><svg width="15" height="15"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" style="color:var(--fw-t3)">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg> <input id="items-search" placeholder="Search..." oninput="filterAllItems()" /></div>
+          <button class="fw-btn-primary" onclick="goPage('report')" style="display:flex;align-items:center;gap:6px"><svg
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg> Report Item</button>
+        </div>
+        <div class="fw-content">
+          <div class="fw-card">
+            <div class="fw-ch">
+              <div class="fw-ct">Items</div>
+              <div class="fw-chips">
+                <button class="fw-chip on" onclick="setAllChip(this,'all')">All</button>
+                <button class="fw-chip" onclick="setAllChip(this,'found')">Found</button>
+                <button class="fw-chip" onclick="setAllChip(this,'pending')">Pending</button>
+                <button class="fw-chip" onclick="setAllChip(this,'returned')">Returned</button>
+              </div>
+            </div>
+            <div id="all-items-empty" class="empty-state">
+              <p>No items yet.</p>
+            </div>
+            <table class="fw-tbl" id="all-items-table" style="display:none">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Location</th>
+                  <th>Date</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="all-items-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT ITEM -->
+      <div class="page" id="page-report" style="flex-direction:column;">
+        <div class="fw-topbar">
+          <div class="fw-tl">
+            <div class="fw-ptitle">Report <em>Item</em></div>
+            <div class="fw-psub">Fill in the details below</div>
+          </div>
+        </div>
+        <div class="fw-content">
+          <div class="fw-card">
+            <div class="fgrid">
+              <div class="fg full" style="margin-bottom:8px">
+                <label class="flbl"
+                  style="margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em">REPORT TYPE
+                  *</label>
+                <div style="display:flex;gap:12px">
+                  <label
+                    style="flex:1;cursor:pointer;border:1px solid #10b981;background:rgba(16,185,129,0.1);padding:16px;border-radius:12px;display:flex;align-items:center;gap:12px;transition:all .2s"
+                    id="lbl-type-found">
+                    <input type="radio" id="f-type-found" name="f-type" value="found" checked
+                      style="accent-color:#10b981;margin:0;width:16px;height:16px"
+                      onchange="document.getElementById('lbl-type-lost').style.borderColor='var(--fw-glass-border-soft)'; document.getElementById('lbl-type-lost').style.background='transparent'; document.getElementById('lbl-type-found').style.borderColor='#10b981'; document.getElementById('lbl-type-found').style.background='rgba(16,185,129,0.1)';">
+                    <div>
+                      <div style="font-weight:600;color:var(--fw-t1);font-size:14px">I found an item</div>
+                      <div style="font-size:11px;color:var(--fw-t3);margin-top:2px">Item was found, submit to registry
+                      </div>
+                    </div>
+                  </label>
+                  <label
+                    style="flex:1;cursor:pointer;border:1px solid var(--fw-glass-border-soft);background:transparent;padding:16px;border-radius:12px;display:flex;align-items:center;gap:12px;transition:all .2s"
+                    id="lbl-type-lost">
+                    <input type="radio" id="f-type-lost" name="f-type" value="lost"
+                      style="accent-color:#10b981;margin:0;width:16px;height:16px"
+                      onchange="document.getElementById('lbl-type-found').style.borderColor='var(--fw-glass-border-soft)'; document.getElementById('lbl-type-found').style.background='transparent'; document.getElementById('lbl-type-lost').style.borderColor='#10b981'; document.getElementById('lbl-type-lost').style.background='rgba(16,185,129,0.1)';">
+                    <div>
+                      <div style="font-weight:600;color:var(--fw-t1);font-size:14px">I lost an item</div>
+                      <div style="font-size:11px;color:var(--fw-t3);margin-top:2px">Report a missing item for matching
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="fg"><label class="flbl">Item name *</label><input class="finput" id="f-name"
+                  placeholder="e.g. Black Backpack" />
+                <div class="err" id="err-name">Item name is required.</div>
+              </div>
+              <div class="fg"><label class="flbl">Category *</label>
+                <select class="finput" id="f-cat">
+                  <option value="">Select category</option>
+                  <option>Electronics</option>
+                  <option>Bags</option>
+                  <option>Accessories</option>
+                  <option>Documents / IDs</option>
+                  <option>Keys</option>
+                  <option>Clothing</option>
+                  <option>Others</option>
+                </select>
+                <div class="err" id="err-cat">Category is required.</div>
+              </div>
+              <div class="fg"><label class="flbl">Location found *</label>
+                <select class="finput" id="f-loc">
+                  <option value="">Select location...</option>
+                  <option>Library · 1st Floor</option>
+                  <option>Library · 2nd Floor</option>
+                  <option>Canteen</option>
+                  <option>New Building 1st Floor</option>
+                  <option>New Building 2nd Floor</option>
+                  <option>New Building 3rd Floor</option>
+                  <option>Old Building 1st Floor</option>
+                  <option>Old Building 2nd Floor</option>
+                  <option>Old Building 3rd Floor</option>
+                  <option>Function Hall</option>
+                  <option>Parking Lot</option>
+                  <option>Admin Office</option>
+                  <option>Others</option>
+                </select>
+                <div class="err" id="err-loc">Location is required.</div>
+              </div>
+              <div class="fg"><label class="flbl">Date Lost/Found</label><input class="finput" type="datetime-local"
+                  id="f-date" />
+              </div>
+              <div class="fg full"><label class="flbl">Description</label><textarea class="finput" id="f-desc" rows="3"
+                  placeholder="Color, brand, markings..." style="resize:none"></textarea></div>
+              <div class="fg"><label class="flbl">Reported by *</label><input class="finput" id="f-reporter"
+                  placeholder="Your name" />
+                <div class="err" id="err-reporter">Reporter name is required.</div>
+              </div>
+
+              <div class="fg full">
+                <label class="flbl">Photo (optional)</label>
+                <label class="fupload" for="f-file">
+                  <div class="fupicon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 4v8M6 8l4-4 4 4" stroke="#86efac" stroke-width="1.5" stroke-linecap="round" />
+                      <path d="M4 14h12" stroke="#86efac" stroke-width="1.5" stroke-linecap="round" opacity=".5" />
+                    </svg></div>
+                  <span style="font-size:13px;font-weight:600;color:#86efac" id="f-file-label">Click to upload
+                    photo</span>
+                  <span style="font-size:11px;color:var(--fw-t3)">PNG, JPG up to 5MB</span>
+                </label>
+                <input type="file" id="f-file" accept="image/*" style="display:none" onchange="handleFile(this)" />
+              </div>
+            </div>
+            <div class="ffoot">
+              <button class="btn-ghost" onclick="resetForm()">Clear</button>
+              <button class="btn-primary" onclick="submitReport()">Submit Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENDING CLAIMS -->
+      <div class="page" id="page-pending" style="flex-direction:column;">
+        <div class="fw-topbar">
+          <div class="fw-tl">
+            <div class="fw-ptitle">Pending <em>Claims</em></div>
+            <div class="fw-psub" id="pending-badge-label">0 open</div>
+          </div>
+        </div>
+        <div class="fw-content">
+          <div class="fw-card">
+            <div class="fw-ch">
+              <div class="fw-ct">Claims awaiting review</div>
+            </div>
+            <div id="pending-page-list">
+              <div class="empty-state" style="padding:32px">
+                <p>No pending claims.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="page" id="page-log" style="flex-direction:column;">
+        <div class="fw-topbar">
+          <div class="fw-tl">
+            <div class="fw-ptitle">Activity <em>Log</em></div>
+            <div class="fw-psub" id="log-page-sub">Full system history</div>
+          </div>
+          <div class="fw-srch" style="display:flex;align-items:center;gap:6px"><svg width="15" height="15"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" style="color:var(--fw-t3)">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg> <input id="log-search" placeholder="Search activity..." oninput="filterFullLog()" /></div>
+        </div>
+        <div class="fw-content">
+          <div class="fw-card">
+            <div class="fw-ch">
+              <div class="fw-ct">All activity</div>
+              <div class="fw-chips">
+                <button class="fw-chip on" onclick="setLogChip(this,'all')">All</button>
+                <button class="fw-chip" onclick="setLogChip(this,'item_reported')">Reported</button>
+                <button class="fw-chip" onclick="setLogChip(this,'claim_submitted')">Claims</button>
+                <button class="fw-chip" onclick="setLogChip(this,'claim_approved')">Approved</button>
+                <button class="fw-chip" onclick="setLogChip(this,'claim_rejected')">Rejected</button>
+              </div>
+            </div>
+            <div class="alist" id="full-log-list">
+              <div class="empty-state" style="padding:32px">
+                <div class="didit-spinner" style="margin-bottom:8px"></div>
+                <p>Loading activity…</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAIL -->
+      <div class="page" id="page-detail" style="flex-direction:column;">
+        <div class="fw-topbar">
+          <div class="fw-tl">
+            <div class="fw-ptitle" id="detail-title">Item Detail</div>
+            <div class="fw-psub" id="detail-sub"></div>
+          </div>
+          <span id="detail-badge" class="badge b-found"><span class="bdot2"></span>Found</span>
+          <div class="detail-status-wrap">
+            <span class="detail-status-label">Change Status</span>
+            <select class="detail-status-select" id="detail-status-select" onchange="changeItemStatus(this.value)">
+              <option value="found">Found</option>
+              <option value="lost">Lost</option>
+              <option value="pending">Pending</option>
+              <option value="returned">Returned</option>
+              <option value="claimed">Claimed</option>
+            </select>
+          </div>
+          <button class="btn-ghost" onclick="goPage('items')" style="margin-left:8px">&#8592; Back</button>
+        </div>
+        <div class="fw-content">
+          <div class="detail-grid">
+            <div class="detail-left">
+              <div class="fw-card" style="padding:16px">
+                <div class="hero">
+                  <div class="hero-shape"></div>
+                  <div id="detail-hero-icon"></div>
+                </div>
+                <div class="drows" id="detail-rows"></div>
+              </div>
+            </div>
+            <div class="detail-right">
+              <div class="claim-panel">
+                <div class="claim-panel-head">
+                  <div class="fw-ct" style="font-size:13.5px">Submit a Claim</div>
+                </div>
+                <div class="claim-inner" id="claim-area"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /fw-main -->
+  </div><!-- /fw-app -->
+
+  <!-- NOTIFICATION PANEL -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-head">Notifications<span class="notif-clear" onclick="clearNotifs()">Clear all</span></div>
+    <div id="notif-list">
+      <div style="padding:20px 16px;font-size:12px;color:var(--fw-t3)">No notifications</div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <!-- PROOF MODAL -->
+  <div class="modal-overlay" id="proof-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">Claim Proof</div><button class="modal-close" onclick="closeModal()">&#215;</button>
+      </div>
+      <div class="modal-body" id="proof-modal-body"></div>
+      <div class="modal-foot"><button class="btn-ghost" onclick="closeModal()">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+    /* ════════════════════════════════════════════════════════════
+       FoundWise — Complete Application
+       Didit email OTP — routed through api.php (PHP backend)
+    ════════════════════════════════════════════════════════════ */
+
+
+    // Calls go through api.php in the same folder — no CORS issues
+    var API_BASE = 'http://localhost/foundwise-server/php/api';
+
+    /* ══════════════════════════════════════════════════════════
+       EmailJS Configuration — Notify Owner
+       Replace these with your actual EmailJS credentials:
+       1. Sign up at https://www.emailjs.com/
+       2. Create an Email Service (e.g. Gmail) → copy Service ID
+       3. Create an Email Template → copy Template ID
+       4. Copy your Public Key from Account → API Keys
+    ══════════════════════════════════════════════════════════ */
+    var EMAILJS_PUBLIC_KEY = 'mXnqcvcY6QYOBh5iB';   // ← replace
+    var EMAILJS_SERVICE_ID = 'service_h2f35ig';   // ← replace
+    var EMAILJS_TEMPLATE_ID = 'template_quw23q6';  // ← replace
+
+    // Initialize EmailJS
+    (function () {
+      if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+      }
+    })();
+
+    /* ── State ── */
+    var items = [], claims = [], activityLog = [], dbActivityLogs = [], notifications = [];
+    var currentFilter = 'all', allItemsFilter = 'all', logFilter = 'all', currentDetailId = null;
+    var claimStep = 1, itemIdCounter = 1, claimIdCounter = 1, claimData = {};
+    var fbOtpSent = false, fbOtpVerified = false, fbOtpTimer = 0, fbOtpInterval = null;
+
+    var ICONS = {
+      'Electronics': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><rect x="3" y="2" width="10" height="12" rx="2" stroke="#c4b5fd" stroke-width="1.3"/><path d="M6 6h4M6 9h2" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round"/></svg>',
+      'Bags': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><path d="M3 13V5l5-3 5 3v8" stroke="#c4b5fd" stroke-width="1.3" stroke-linejoin="round"/><rect x="6" y="8" width="4" height="5" rx=".5" stroke="#c4b5fd" stroke-width="1.2"/></svg>',
+      'Accessories': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><rect x="2" y="5" width="12" height="8" rx="1.5" stroke="#c4b5fd" stroke-width="1.3"/><path d="M5 5V4a3 3 0 016 0v1" stroke="#c4b5fd" stroke-width="1.3"/></svg>',
+      'Documents / IDs': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#c4b5fd" stroke-width="1.3"/><path d="M5 7h6M5 9.5h4" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round"/></svg>',
+      'Keys': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><circle cx="8" cy="8" r="3" stroke="#c4b5fd" stroke-width="1.3"/><path d="M8 5V2M8 14v-3M5 8H2M14 8h-3" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round"/></svg>',
+      'Clothing': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><path d="M6 2l-4 3 2 1v7h8V6l2-1-4-3" stroke="#c4b5fd" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+      'Others': '<svg viewBox="0 0 16 16" fill="none" width="56" height="56" style="opacity:.5"><circle cx="8" cy="8" r="5.5" stroke="#c4b5fd" stroke-width="1.3"/><path d="M8 6v2.5L9.5 10" stroke="#c4b5fd" stroke-width="1.3" stroke-linecap="round"/></svg>'
+    };
+    var THUMB_ICONS = {
+      'Electronics': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="2" stroke="#93c5fd" stroke-width="1.3"/><path d="M6 6h4M6 9h2" stroke="#93c5fd" stroke-width="1.2" stroke-linecap="round"/></svg>',
+      'Bags': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 13V5l5-3 5 3v8" stroke="#93c5fd" stroke-width="1.3" stroke-linejoin="round"/><rect x="6" y="8" width="4" height="5" rx=".5" stroke="#93c5fd" stroke-width="1.2"/></svg>',
+      'Accessories': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="8" rx="1.5" stroke="#93c5fd" stroke-width="1.3"/><path d="M5 5V4a3 3 0 016 0v1" stroke="#93c5fd" stroke-width="1.3"/></svg>',
+      'Documents / IDs': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#93c5fd" stroke-width="1.3"/><path d="M5 7h6M5 9.5h4" stroke="#93c5fd" stroke-width="1.2" stroke-linecap="round"/></svg>',
+      'Keys': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="#93c5fd" stroke-width="1.3"/><path d="M8 5V2M8 14v-3M5 8H2M14 8h-3" stroke="#93c5fd" stroke-width="1.2" stroke-linecap="round"/></svg>',
+      'Clothing': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 2l-4 3 2 1v7h8V6l2-1-4-3" stroke="#93c5fd" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+      'Others': '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#93c5fd" stroke-width="1.3"/><path d="M8 6v2.5L9.5 10" stroke="#93c5fd" stroke-width="1.3" stroke-linecap="round"/></svg>'
+    };
+
+    /* ── Utilities ── */
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function timeAgo(ts) { var d = Date.now() - ts, m = Math.floor(d / 60000); if (m < 1) return 'just now'; if (m < 60) return m + 'm ago'; var h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; return Math.floor(h / 24) + 'd ago'; }
+    function fmtDate(s) { var d = new Date(s); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); }
+    function statusBadge(s) {
+      var m = { found: 'b-found', lost: 'b-lost', pending: 'b-pend', returned: 'b-ret', claimed: 'b-clm' };
+      var l = { found: 'Found', lost: 'Lost', pending: 'Pending', returned: 'Returned', claimed: 'Claimed' };
+      return '<span class="badge ' + (m[s] || 'b-found') + '"><span class="bdot2"></span>' + (l[s] || s) + '</span>';
+    }
+
+    function fetchData() {
+      Promise.all([
+        fetch('/foundwise-server/php/api/get_items.php').then(r => r.json()),
+        fetch('/foundwise-server/php/api/get_claims.php').then(r => r.json()),
+        fetch('/foundwise-server/php/api/get_activity_logs.php?limit=100').then(r => r.json())
+      ]).then(([itemsData, claimsData, logsData]) => {
+        if (itemsData.success) items = itemsData.items;
+        if (claimsData.success) claims = claimsData.claims;
+        if (logsData.success) dbActivityLogs = logsData.logs || [];
+        updateStats();
+        // Always re-render all key views so data is fresh when user navigates
+        renderItemsTable();
+        renderAllItems();
+        renderPendingClaims();
+        renderPendingPage();
+        renderDbActivityFeed();
+        var pg = document.querySelector('.page.on');
+        var pgId = pg ? pg.id : '';
+        if (pgId === 'page-log') renderDbFullLog();
+        var detailItem = items.find(function (i) { return i.id === currentDetailId; });
+        if (detailItem && document.getElementById('claim-area')) renderClaimArea(detailItem);
+      }).catch(err => {
+        console.error('Error fetching data:', err);
+      });
+    }
+
+    /* ── Theme toggle ── */
+    function toggleTheme() {
+      var isLight = document.body.classList.toggle('light-theme');
+      var label = document.getElementById('theme-label');
+      if (label) label.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+      try { localStorage.setItem('fw_theme', isLight ? 'light' : 'dark'); } catch (e) { }
+    }
+
+    function applyStoredTheme() {
+      var saved;
+      try { saved = localStorage.getItem('fw_theme'); } catch (e) { }
+      if (saved === 'light') {
+        document.body.classList.add('light-theme');
+        var label = document.getElementById('theme-label');
+        if (label) label.textContent = 'Dark Mode';
+      }
+    }
+
+    function init() {
+      applyStoredTheme();
+      var d = new Date();
+      document.getElementById('dash-date').textContent = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('f-date').value = new Date().toISOString().slice(0, 16);
+      fetchData();
+    }
+
+    /* ── Navigation ── */
+    function goPage(pg) {
+      document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('on'); });
+      document.querySelectorAll('.fw-ni').forEach(function (n) { n.classList.remove('on'); });
+      document.getElementById('page-' + pg).classList.add('on');
+      var nm = { dashboard: 'nav-dash', items: 'nav-items', report: 'nav-report', pending: 'nav-pending', log: 'nav-log', detail: 'nav-items' };
+      var n = document.getElementById(nm[pg]); if (n) n.classList.add('on');
+      if (pg === 'dashboard') { renderItemsTable(); updateStats(); }
+      if (pg === 'items') renderAllItems();
+      if (pg === 'pending') renderPendingPage();
+      if (pg === 'log') renderDbFullLog();
+      closeNotif();
+    }
+
+    /* ── Stats ── */
+    function updateStats() {
+      var total = items.length;
+      var unclaimed = items.filter(function (i) { return i.status === 'found'; }).length;
+      var returned = items.filter(function (i) { return i.status === 'returned'; }).length;
+      var pending = claims.filter(function (c) { return c.status === 'pending'; }).length;
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-unclaimed').textContent = unclaimed;
+      document.getElementById('stat-returned').textContent = returned;
+      document.getElementById('stat-pending').textContent = pending;
+      var week = items.filter(function (i) { return Date.now() - i.ts < 7 * 86400000; }).length;
+      document.getElementById('stat-week').textContent = week + ' this week';
+      document.getElementById('bar-total').style.width = Math.min(100, total * 5) + '%';
+      document.getElementById('bar-unclaimed').style.width = total ? Math.round(unclaimed / total * 100) + '%' : '0%';
+      document.getElementById('bar-returned').style.width = total ? Math.round(returned / total * 100) + '%' : '0%';
+      document.getElementById('bar-pending').style.width = total ? Math.round(pending / total * 100) + '%' : '0%';
+      document.getElementById('nav-item-count').textContent = total;
+      document.getElementById('items-page-sub').textContent = total + ' item' + (total !== 1 ? 's' : '') + ' total';
+      var badge = document.getElementById('nav-pending-badge');
+      badge.textContent = pending; badge.style.display = pending > 0 ? '' : 'none';
+      document.getElementById('pending-badge-label').textContent = pending + ' open';
+    }
+
+    /* ── Render tables ── */
+    function renderItemsTable() {
+      var search = (document.getElementById('dash-search').value || '').toLowerCase();
+      var filtered = items.filter(function (i) {
+        return (currentFilter === 'all' || i.status === currentFilter) &&
+          (!search || i.name.toLowerCase().includes(search) || i.location.toLowerCase().includes(search) || i.category.toLowerCase().includes(search));
+      }).slice(-8).reverse();
+      var tbody = document.getElementById('items-tbody');
+      var empty = document.getElementById('items-empty');
+      var table = document.getElementById('items-table');
+      if (!filtered.length) { table.style.display = 'none'; empty.style.display = 'flex'; return; }
+      empty.style.display = 'none'; table.style.display = 'table';
+      tbody.innerHTML = filtered.map(function (i) {
+        var th = THUMB_ICONS[i.category] || THUMB_ICONS['Others'];
+        return '<tr onclick="openDetail(\'' + i.id + '\')"><td><div class="irow"><div class="thumb">' + th + '</div><div><div class="iname">' + esc(i.name) + '</div><div class="iloc">' + esc(i.category) + '</div></div></div></td><td>' + esc(i.location) + '</td><td>' + fmtDate(i.date) + '</td><td>' + statusBadge(i.status) + '</td><td><span class="act-link">View &#8594;</span></td></tr>';
+      }).join('');
+    }
+
+    function renderPendingClaims() {
+      var pending = claims.filter(function (c) { return c.status === 'pending'; });
+      var el = document.getElementById('pending-claims-list'); if (!el) return;
+      if (!pending.length) { el.innerHTML = '<div class="empty-state" style="padding:24px 12px"><p>No pending claims yet.</p></div>'; return; }
+      el.innerHTML = pending.map(function (c) {
+        var ini = c.claimant.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+        var itm = items.find(function (i) { return i.id === c.itemId; });
+        return '<div class="ci"><div class="citop"><div class="cava">' + ini + '</div><div class="cname">' + esc(c.claimant) + '</div><div class="ctime">' + timeAgo(c.ts) + '</div></div><div class="cfor">Claiming: ' + esc(itm ? itm.name : 'Unknown') + '</div><div class="cbtns"><button class="cbtn cb-ok" onclick="approveClaim(\'' + c.id + '\')">Approve</button><button class="cbtn cb-no" onclick="rejectClaim(\'' + c.id + '\')">Reject</button><button class="cbtn cb-view" onclick="viewProof(\'' + c.id + '\')">Proof</button></div></div>';
+      }).join('');
+    }
+
+    function renderPendingPage() {
+      var pending = claims.filter(function (c) { return c.status === 'pending'; });
+      document.getElementById('pending-badge-label').textContent = pending.length + ' open';
+      var el = document.getElementById('pending-page-list');
+      if (!pending.length) { el.innerHTML = '<div class="empty-state" style="padding:32px"><p>No pending claims.</p></div>'; return; }
+      el.innerHTML = pending.map(function (c) {
+        var ini = c.claimant.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+        var itm = items.find(function (i) { return i.id === c.itemId; });
+        return '<div class="ci" style="margin-bottom:8px"><div class="citop"><div class="cava">' + ini + '</div><div class="cname">' + esc(c.claimant) + '</div><div class="ctime">' + timeAgo(c.ts) + '</div></div><div class="cfor">Claiming: ' + esc(itm ? itm.name : 'Unknown') + '</div><div style="font-size:11px;color:var(--fw-t3);margin-bottom:8px">' + esc(c.proof.slice(0, 80)) + (c.proof.length > 80 ? '...' : '') + '</div><div class="cbtns"><button class="cbtn cb-ok" onclick="approveClaim(\'' + c.id + '\');renderPendingPage()">Approve</button><button class="cbtn cb-no" onclick="rejectClaim(\'' + c.id + '\');renderPendingPage()">Reject</button><button class="cbtn cb-view" onclick="viewProof(\'' + c.id + '\')">Proof</button></div></div>';
+      }).join('');
+    }
+
+    function renderActivityLog() {
+      var el = document.getElementById('activity-list');
+      var recent = activityLog.slice(-5).reverse();
+      if (!recent.length) { el.innerHTML = '<div class="empty-state" style="padding:20px 8px"><p>No activity yet.</p></div>'; return; }
+      el.innerHTML = recent.map(function (a) { return '<div class="ai"><div class="adot-col"><div class="adot" style="background:' + a.color + '"></div></div><div><div class="atxt">' + esc(a.text) + '</div><div class="atm">' + timeAgo(a.ts) + '</div></div></div>'; }).join('');
+    }
+
+    function renderFullLog() {
+      var el = document.getElementById('full-log-list');
+      var all = activityLog.slice().reverse();
+      if (!all.length) { el.innerHTML = '<div class="empty-state" style="padding:32px"><p>No activity yet.</p></div>'; return; }
+      el.innerHTML = all.map(function (a) { return '<div class="ai"><div class="adot-col"><div class="adot" style="background:' + a.color + '"></div></div><div><div class="atxt">' + esc(a.text) + '</div><div class="atm">' + timeAgo(a.ts) + '</div></div></div>'; }).join('');
+    }
+
+    /* ── Database-driven activity feed (Dashboard — top 5) ── */
+    function dbLogTimeAgo(dateStr) {
+      var ts = new Date(dateStr + (dateStr.includes('T') ? '' : ' UTC')).getTime();
+      return timeAgo(ts);
+    }
+    function renderDbActivityFeed() {
+      var el = document.getElementById('activity-list');
+      var logs = dbActivityLogs.slice(0, 5);
+      if (!logs.length) { el.innerHTML = '<div class="empty-state" style="padding:20px 8px"><p>No activity yet.</p></div>'; return; }
+      el.innerHTML = logs.map(function (l) {
+        var actionIcons = {
+          item_reported: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+          claim_submitted: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+          claim_approved: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>',
+          claim_rejected: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+          item_returned: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>'
+        };
+        var icon = actionIcons[l.action] || '';
+        return '<div class="ai"><div class="adot-col"><div class="adot" style="background:' + esc(l.color || '#1C5C38') + ';color:' + esc(l.color || '#1C5C38') + '">' + icon + '</div></div><div style="flex:1;min-width:0"><div class="atxt">' + esc(l.description) + '</div><div class="atm" style="display:flex;align-items:center;gap:6px">' + dbLogTimeAgo(l.created_at) + (l.user_name ? ' &middot; <span style="color:var(--fw-t2)">' + esc(l.user_name) + '</span>' : '') + '</div></div></div>';
+      }).join('');
+    }
+
+    /* ── Database-driven full activity log page ── */
+    function renderDbFullLog() {
+      var el = document.getElementById('full-log-list');
+      var search = (document.getElementById('log-search').value || '').toLowerCase();
+      var logs = dbActivityLogs.filter(function (l) {
+        if (logFilter !== 'all' && l.action !== logFilter) return false;
+        if (search && l.description.toLowerCase().indexOf(search) === -1 &&
+          (l.user_name || '').toLowerCase().indexOf(search) === -1) return false;
+        return true;
+      });
+      var sub = document.getElementById('log-page-sub');
+      if (sub) sub.textContent = logs.length + ' activit' + (logs.length !== 1 ? 'ies' : 'y') + ' total';
+      if (!logs.length) { el.innerHTML = '<div class="empty-state" style="padding:32px"><p>No activity matching filters.</p></div>'; return; }
+      el.innerHTML = logs.map(function (l) {
+        var actionLabels = {
+          item_reported: '<span class="badge b-found" style="font-size:10px;padding:2px 8px"><span class="bdot2"></span>Reported</span>',
+          claim_submitted: '<span class="badge b-pend" style="font-size:10px;padding:2px 8px"><span class="bdot2"></span>Claim</span>',
+          claim_approved: '<span class="badge b-ret" style="font-size:10px;padding:2px 8px"><span class="bdot2"></span>Approved</span>',
+          claim_rejected: '<span class="badge b-lost" style="font-size:10px;padding:2px 8px"><span class="bdot2"></span>Rejected</span>',
+          item_returned: '<span class="badge b-clm" style="font-size:10px;padding:2px 8px"><span class="bdot2"></span>Returned</span>'
+        };
+        var badge = actionLabels[l.action] || '<span class="badge b-found" style="font-size:10px;padding:2px 8px"><span class="bdot2"></span>' + esc(l.action) + '</span>';
+        var dateStr = new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' &middot; ' + new Date(l.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        return '<div class="ai" style="align-items:flex-start"><div class="adot-col"><div class="adot" style="background:' + esc(l.color || '#1C5C38') + '"></div></div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">' + badge + (l.user_name ? '<span style="font-size:11px;color:var(--fw-t3)">' + esc(l.user_name) + '</span>' : '') + '</div><div class="atxt">' + esc(l.description) + '</div><div class="atm">' + dateStr + (l.ip_address ? ' &middot; IP ' + esc(l.ip_address) : '') + '</div></div></div>';
+      }).join('');
+    }
+
+    function setLogChip(el, filter) {
+      el.closest('.fw-chips').querySelectorAll('.fw-chip').forEach(function (c) { c.classList.remove('on'); });
+      el.classList.add('on'); logFilter = filter; renderDbFullLog();
+    }
+    function filterFullLog() { renderDbFullLog(); }
+
+    function renderAllItems() {
+      var search = (document.getElementById('items-search').value || '').toLowerCase();
+      var filtered = items.filter(function (i) {
+        return (allItemsFilter === 'all' || i.status === allItemsFilter) &&
+          (!search || i.name.toLowerCase().includes(search) || i.location.toLowerCase().includes(search) || i.category.toLowerCase().includes(search));
+      }).slice().reverse();
+      var empty = document.getElementById('all-items-empty');
+      var table = document.getElementById('all-items-table');
+      var tbody = document.getElementById('all-items-tbody');
+      if (!filtered.length) { table.style.display = 'none'; empty.style.display = 'flex'; return; }
+      empty.style.display = 'none'; table.style.display = 'table';
+      tbody.innerHTML = filtered.map(function (i) {
+        var th = THUMB_ICONS[i.category] || THUMB_ICONS['Others'];
+        return '<tr onclick="openDetail(\'' + i.id + '\')"><td><div class="irow"><div class="thumb">' + th + '</div><div><div class="iname">' + esc(i.name) + '</div><div class="iloc">#FW-' + String(i.num).padStart(4, '0') + '</div></div></div></td><td>' + esc(i.location) + '</td><td>' + fmtDate(i.date) + '</td><td>' + esc(i.category) + '</td><td>' + statusBadge(i.status) + '</td><td><span class="act-link">View &#8594;</span></td></tr>';
+      }).join('');
+    }
+
+    /* ── Activity & Notifications ── */
+    function addActivity(text, color) {
+      activityLog.push({ text: text, color: color || '#1C5C38', ts: Date.now() });
+      // Refresh from DB to stay in sync (the PHP endpoint already logged it)
+      fetchActivityLogs();
+      notifications.unshift({ text: text, ts: Date.now() });
+      renderNotifs();
+      document.getElementById('bell-dot').style.display = '';
+    }
+
+    /* ── Standalone activity log refresh ── */
+    function fetchActivityLogs() {
+      fetch('/foundwise-server/php/api/get_activity_logs.php?limit=100')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            dbActivityLogs = data.logs || [];
+            renderDbActivityFeed();
+            if (document.getElementById('page-log').classList.contains('on')) renderDbFullLog();
+          }
+        })
+        .catch(function (err) { console.warn('Activity log fetch failed:', err); });
+    }
+    function renderNotifs() {
+      var el = document.getElementById('notif-list');
+      if (!notifications.length) { el.innerHTML = '<div style="padding:20px 16px;font-size:12px;color:var(--fw-t3)">No notifications</div>'; return; }
+      el.innerHTML = notifications.slice(0, 10).map(function (n, idx) {
+        var btnHtml = '';
+        if (n.type === 'item_found' && n.itemId && n.ownerEmail) {
+          var btnId = 'notify-btn-' + idx;
+          if (n.notified) {
+            btnHtml = '<button class="notif-notify-btn sent" disabled>' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+              'Owner Notified</button>';
+          } else {
+            btnHtml = '<button class="notif-notify-btn" id="' + btnId + '" onclick="notifyOwnerViaEmail(' + idx + ')">' +
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>' +
+              'Notify Owner</button>';
+          }
+        }
+        return '<div class="notif-item"><div class="notif-title">' + esc(n.text) + '</div><div class="notif-time">' + timeAgo(n.ts) + '</div>' + btnHtml + '</div>';
+      }).join('');
+    }
+    function clearNotifs() { notifications = []; document.getElementById('bell-dot').style.display = 'none'; renderNotifs(); }
+    function toggleNotif() { document.getElementById('notif-panel').classList.toggle('show'); }
+    function closeNotif() { document.getElementById('notif-panel').classList.remove('show'); }
+    document.addEventListener('click', function (e) {
+      var p = document.getElementById('notif-panel'); var b = document.getElementById('bell-btn');
+      if (p.classList.contains('show') && !p.contains(e.target) && !b.contains(e.target)) closeNotif();
+    });
+
+    /* ══════════════════════════════════════════════════════════
+       Notify Owner via EmailJS
+       Triggered when admin clicks "Notify Owner" on a found-item
+       notification. Sends an email with item name, found message,
+       and retrieval instructions.
+    ══════════════════════════════════════════════════════════ */
+    function notifyOwnerViaEmail(notifIndex) {
+      var n = notifications[notifIndex];
+      if (!n || !n.ownerEmail || !n.itemName) {
+        showToast('Missing owner details for this notification.', 'error');
+        return;
+      }
+
+      var btn = document.getElementById('notify-btn-' + notifIndex);
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="didit-spinner" style="width:12px;height:12px;border-width:1.5px"></span> Sending…'; }
+
+      // Prepare template parameters for EmailJS
+      var templateParams = {
+        to_email: n.ownerEmail,
+        to_name: n.ownerName || 'Student',
+        item_name: n.itemName,
+        item_location: n.itemLocation || 'the campus',
+        message: 'Great news! Your item "' + n.itemName + '" has been found and is ready for retrieval.',
+        instructions: 'To claim your item, please follow these steps:\n\n' +
+          '1. Visit the FoundWise Lost & Found Office during business hours (Mon–Fri, 8:00 AM – 5:00 PM).\n' +
+          '2. Bring a valid student/employee ID for verification.\n' +
+          '3. Reference your item: "' + n.itemName + '" (Ref #' + (n.itemRef || 'N/A') + ').\n' +
+          '4. Our staff will verify your identity and hand over the item.\n\n' +
+          'If you have questions, reply to this email or visit the FoundWise dashboard.'
+      };
+
+      if (typeof emailjs === 'undefined') {
+        showToast('EmailJS SDK not loaded. Check your internet connection.', 'error');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg> Notify Owner'; }
+        return;
+      }
+
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function (response) {
+          console.log('EmailJS success:', response.status, response.text);
+          n.notified = true;
+          renderNotifs();
+          showToast('Owner notified successfully! Email sent to ' + n.ownerEmail, 'success');
+        })
+        .catch(function (error) {
+          console.error('EmailJS error:', error);
+          showToast('Failed to send email: ' + (error.text || error.message || 'Unknown error'), 'error');
+          if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg> Notify Owner'; }
+        });
+    }
+
+    /* ── Add a found-item notification (with Notify Owner action) ── */
+    function addFoundItemNotification(item, ownerEmail, ownerName) {
+      notifications.unshift({
+        text: 'Item found: "' + item.name + '" — ready to notify owner',
+        ts: Date.now(),
+        type: 'item_found',
+        itemId: item.id,
+        itemName: item.name,
+        itemLocation: item.location || '',
+        itemRef: 'FW-' + String(item.num || '0000').toString().padStart(4, '0'),
+        ownerEmail: ownerEmail,
+        ownerName: ownerName || 'Student',
+        notified: false
+      });
+      renderNotifs();
+      document.getElementById('bell-dot').style.display = '';
+    }
+
+    /* ── Toast ── */
+    function showToast(msg, type) {
+      var w = document.getElementById('toast-wrap');
+      var t = document.createElement('div'); t.className = 'toast ' + (type || 'info'); t.textContent = msg;
+      w.appendChild(t);
+      setTimeout(function () { t.style.animation = 'fw-fadeout .3s ease forwards'; setTimeout(function () { if (w.contains(t)) w.removeChild(t); }, 300); }, 3000);
+    }
+
+    /* ── Chips / filters ── */
+    function filterItems() { renderItemsTable(); }
+    function filterAllItems() { renderAllItems(); }
+    function setChip(el, filter) {
+      el.closest('.fw-chips').querySelectorAll('.fw-chip').forEach(function (c) { c.classList.remove('on'); });
+      el.classList.add('on'); currentFilter = filter; renderItemsTable();
+    }
+    function setAllChip(el, filter) {
+      el.closest('.fw-chips').querySelectorAll('.fw-chip').forEach(function (c) { c.classList.remove('on'); });
+      el.classList.add('on'); allItemsFilter = filter; renderAllItems();
+    }
+
+    /* ── Report form ── */
+    function submitReport() {
+      var name = document.getElementById('f-name').value.trim();
+      var cat = document.getElementById('f-cat').value;
+      var loc = document.getElementById('f-loc').value;
+      var reporter = document.getElementById('f-reporter').value.trim();
+      var valid = true;
+      [{ id: 'f-name', err: 'err-name', val: name }, { id: 'f-cat', err: 'err-cat', val: cat }, { id: 'f-loc', err: 'err-loc', val: loc }, { id: 'f-reporter', err: 'err-reporter', val: reporter }].forEach(function (f) {
+        var e = document.getElementById(f.err);
+        if (!f.val) { e.classList.add('show'); valid = false; } else e.classList.remove('show');
+      });
+      if (!valid) return;
+      var type = document.querySelector('input[name="f-type"]:checked').value;
+      var desc = document.getElementById('f-desc').value.trim();
+      var dateVal = document.getElementById('f-date').value || new Date().toISOString().slice(0, 16);
+
+      var session = localStorage.getItem('fw_session');
+      var userId = null;
+      if (session) {
+        try { userId = JSON.parse(session).user_id; } catch (e) { }
+      }
+
+      var payload = {
+        user_id: userId,
+        type: type,
+        name: name,
+        category: cat,
+        location: loc,
+        description: desc
+      };
+
+      var btn = document.querySelector('#page-report .btn-primary');
+      var oldTxt = btn.textContent;
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      fetch('/foundwise-server/php/api/add_item.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(data => {
+          btn.textContent = oldTxt;
+          btn.disabled = false;
+          if (!data.success) {
+            showToast(data.error || 'Failed to submit report', 'error');
+            return;
+          }
+          var item = {
+            id: 'item-' + data.item_id, num: data.item_id, name: name, category: cat, location: loc,
+            date: dateVal, description: desc, reporter: reporter, status: type === 'lost' ? 'lost' : 'found', ts: Date.now()
+          };
+          items.push(item); updateStats(); renderItemsTable();
+          addActivity('New item reported (' + type + '): ' + name + ' at ' + loc, '#1C5C38');
+          showToast('Item "' + name + '" reported successfully!', 'success');
+
+          // ── If item is reported as "found", trigger a Notify Owner notification ──
+          if (type === 'found') {
+            // Prompt admin to enter the owner's email for notification
+            showFoundItemPrompt(item);
+          }
+
+          resetForm(); goPage('dashboard');
+        })
+        .catch(err => {
+          btn.textContent = oldTxt;
+          btn.disabled = false;
+          showToast('Error communicating with server', 'error');
+        });
+    }
+    function resetForm() {
+      ['f-name', 'f-desc', 'f-reporter'].forEach(function (id) { document.getElementById(id).value = ''; });
+      ['f-cat', 'f-loc'].forEach(function (id) { document.getElementById(id).selectedIndex = 0; });
+      document.getElementById('f-date').value = new Date().toISOString().slice(0, 16);
+      document.getElementById('f-file-label').textContent = 'Click to upload photo';
+      ['err-name', 'err-cat', 'err-loc', 'err-reporter'].forEach(function (id) { document.getElementById(id).classList.remove('show'); });
+      var rf = document.getElementById('f-type-found');
+      if (rf) {
+        rf.checked = true;
+        document.getElementById('lbl-type-lost').style.borderColor = 'var(--fw-glass-border-soft)';
+        document.getElementById('lbl-type-lost').style.background = 'transparent';
+        document.getElementById('lbl-type-found').style.borderColor = '#10b981';
+        document.getElementById('lbl-type-found').style.background = 'rgba(16,185,129,0.1)';
+      }
+    }
+    function handleFile(input) { if (input.files && input.files[0]) document.getElementById('f-file-label').textContent = input.files[0].name; }
+
+    /* ── Detail page ── */
+    function openDetail(id) {
+      var item = items.find(function (i) { return i.id === id; }); if (!item) return;
+      currentDetailId = id; claimStep = 1; claimData = {}; fbOtpVerified = false; fbOtpSent = false;
+      document.getElementById('detail-title').textContent = 'Item \u2014 ' + item.name;
+      document.getElementById('detail-sub').textContent = '#FW-' + String(item.num).padStart(4, '0') + ' \u00b7 Reported ' + new Date(item.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      var badgeEl = document.getElementById('detail-badge');
+      var bmap = { found: 'b-found', lost: 'b-lost', pending: 'b-pend', returned: 'b-ret', claimed: 'b-clm' };
+      var blbl = { found: 'Found', lost: 'Lost', pending: 'Pending claim', returned: 'Returned', claimed: 'Claimed' };
+      badgeEl.className = 'badge ' + (bmap[item.status] || 'b-found');
+      badgeEl.innerHTML = '<span class="bdot2"></span>' + (blbl[item.status] || item.status);
+      // Set the status dropdown to the current item status
+      var statusSelect = document.getElementById('detail-status-select');
+      if (statusSelect) statusSelect.value = item.status || 'found';
+      document.getElementById('detail-hero-icon').innerHTML = ICONS[item.category] || ICONS['Others'];
+      document.getElementById('detail-rows').innerHTML = [
+        ['Item name', item.name], ['Category', item.category], ['Location found', item.location],
+        ['Date Lost/Found', new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' \u00b7 ' + new Date(item.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })],
+        ['Description', item.description || 'No description provided.'],
+        ['Reported by', item.reporter],
+        ['Status', '<span class="badge ' + (bmap[item.status] || 'b-found') + '"><span class="bdot2"></span>' + (blbl[item.status] || item.status) + '</span>']
+      ].map(function (r) { return '<div class="dr"><div class="dk">' + r[0] + '</div><div class="dv">' + r[1] + '</div></div>'; }).join('');
+      renderClaimArea(item); goPage('detail');
+    }
+
+    function renderClaimArea(item) {
+      var area = document.getElementById('claim-area');
+      if (item.status === 'returned' || item.status === 'claimed') {
+        area.innerHTML = '<div style="padding:24px 8px;text-align:center;color:var(--fw-t3);font-size:12px"><div style="font-size:24px;margin-bottom:8px">&#10003;</div>This item has been ' + item.status + '.<br>No claims can be submitted.</div>'; return;
+      }
+      var existing = claims.find(function (c) { return c.itemId === item.id && c.status === 'pending'; });
+      if (existing) {
+        area.innerHTML = '<div style="padding:24px 8px;text-align:center;color:#fbbf24;font-size:12px"><div style="margin-bottom:8px">&#9203;</div>A claim is already pending.<br><span style="color:var(--fw-t3)">Check back after admin review.</span></div>'; return;
+      }
+      renderClaimStep(item);
+    }
+
+    /* ── Approve / Reject / View Proof ── */
+    function updateClaimStatus(claimId, status) {
+      fetch('/foundwise-server/php/api/update_claim.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ claimId: claimId, status: status })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) { showToast(data.error || 'Failed to update claim', 'error'); return; }
+          showToast('Claim ' + status + '.', status === 'approved' ? 'success' : 'error');
+          fetchData();
+        })
+        .catch(err => {
+          showToast('Error communicating with server', 'error');
+        });
+    }
+
+    function approveClaim(claimId) {
+      var claim = claims.find(function (c) { return c.id === claimId; }); if (!claim) return;
+      var item = items.find(function (i) { return i.id === claim.itemId; });
+      updateClaimStatus(claimId, 'approved');
+      addActivity('Claim approved \u2014 ' + (item ? item.name : 'item') + ' returned to ' + claim.claimant, '#0d9488');
+    }
+    function rejectClaim(claimId) {
+      var claim = claims.find(function (c) { return c.id === claimId; }); if (!claim) return;
+      var item = items.find(function (i) { return i.id === claim.itemId; });
+      updateClaimStatus(claimId, 'rejected');
+      addActivity('Claim rejected for ' + (item ? item.name : 'item'), '#dc2626');
+    }
+    function viewProof(claimId) {
+      var claim = claims.find(function (c) { return c.id === claimId; }); if (!claim) return;
+      var item = items.find(function (i) { return i.id === claim.itemId; });
+      var gmailIcon = '<svg width="11" height="11" viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" fill="#EA4335"/></svg>';
+      document.getElementById('proof-modal-body').innerHTML =
+        '<div style="font-size:12.5px;color:var(--fw-t2);line-height:1.8">' +
+        '<div style="display:flex;gap:12px;margin-bottom:14px;background:rgba(26,86,219,.1);border-radius:10px;padding:12px">' +
+        '<div class="cava" style="width:36px;height:36px;font-size:13px">' + claim.claimant.split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2) + '</div>' +
+        '<div style="flex:1">' +
+        '<div style="font-weight:600;color:var(--fw-t1)">' + esc(claim.claimant) + '</div>' +
+        '<div style="font-size:11px;color:var(--fw-t3)">' + esc(claim.sid || 'No ID') + '</div>' +
+        '<div style="font-size:11px;color:var(--fw-t3);display:flex;align-items:center;gap:5px;margin-top:3px">' + gmailIcon + ' ' + esc(claim.gmailEmail || 'No Gmail') + (claim.gmailVerified ? ' <span style="color:#4ade80">&#10003; verified</span>' : '') + '</div>' +
+        '</div></div>' +
+        '<div style="margin-bottom:6px"><span style="color:var(--fw-t3);font-size:11px">Claiming:</span> ' + esc(item ? item.name : '') + '</div>' +
+        '<div style="margin-bottom:6px"><span style="color:var(--fw-t3);font-size:11px">Submitted:</span> ' + timeAgo(claim.ts) + '</div>' +
+        '<div style="border-top:1px solid var(--fw-glass-border-soft);padding-top:12px;margin-top:12px">' +
+        '<div style="color:var(--fw-t3);font-size:11px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">Proof of ownership</div>' +
+        esc(claim.proof) + '</div></div>';
+      document.getElementById('proof-modal').classList.add('show');
+    }
+    function closeModal() { document.getElementById('proof-modal').classList.remove('show'); }
+
+    /* ══════════════════════════════════════════════════════════
+       Change Item Status — Admin dropdown on detail page
+       When status changes to "Found", triggers the owner email
+       prompt and creates a notification with "Notify Owner" button.
+    ══════════════════════════════════════════════════════════ */
+    function changeItemStatus(newStatus) {
+      var item = items.find(function (i) { return i.id === currentDetailId; });
+      if (!item) { showToast('Item not found', 'error'); return; }
+      if (item.status === newStatus) return;
+
+      var oldStatus = item.status;
+      var selectEl = document.getElementById('detail-status-select');
+      if (selectEl) selectEl.disabled = true;
+
+      var session = localStorage.getItem('fw_session');
+      var userId = null;
+      if (session) {
+        try { userId = JSON.parse(session).user_id; } catch (e) { }
+      }
+
+      fetch('/foundwise-server/php/api/update_item_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId: item.id, status: newStatus, user_id: userId })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (selectEl) selectEl.disabled = false;
+          if (!data.success) {
+            showToast(data.error || 'Failed to update status', 'error');
+            if (selectEl) selectEl.value = oldStatus;
+            return;
+          }
+
+          // Update local item state
+          item.status = newStatus;
+
+          // Refresh badge on detail page
+          var bmap = { found: 'b-found', lost: 'b-lost', pending: 'b-pend', returned: 'b-ret', claimed: 'b-clm' };
+          var blbl = { found: 'Found', lost: 'Lost', pending: 'Pending claim', returned: 'Returned', claimed: 'Claimed' };
+          var badgeEl = document.getElementById('detail-badge');
+          badgeEl.className = 'badge ' + (bmap[newStatus] || 'b-found');
+          badgeEl.innerHTML = '<span class="bdot2"></span>' + (blbl[newStatus] || newStatus);
+
+          // Refresh the detail rows
+          document.getElementById('detail-rows').innerHTML = [
+            ['Item name', item.name], ['Category', item.category], ['Location found', item.location],
+            ['Date found', new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' \u00b7 ' + new Date(item.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })],
+            ['Description', item.description || 'No description provided.'],
+            ['Reported by', item.reporter],
+            ['Status', '<span class="badge ' + (bmap[newStatus] || 'b-found') + '"><span class="bdot2"></span>' + (blbl[newStatus] || newStatus) + '</span>']
+          ].map(function (r) { return '<div class="dr"><div class="dk">' + r[0] + '</div><div class="dv">' + r[1] + '</div></div>'; }).join('');
+
+          renderClaimArea(item);
+          updateStats();
+          addActivity('Status changed: "' + item.name + '" — ' + oldStatus + ' → ' + newStatus, newStatus === 'found' ? '#16a34a' : '#1C5C38');
+          showToast('Status updated to ' + (blbl[newStatus] || newStatus), 'success');
+
+          // ── KEY FEATURE: When status becomes "Found", trigger owner notification ──
+          if (newStatus === 'found') {
+            showFoundItemPrompt(item);
+          }
+
+          // Refresh data from server
+          fetchData();
+        })
+        .catch(function (err) {
+          if (selectEl) { selectEl.disabled = false; selectEl.value = oldStatus; }
+          showToast('Error communicating with server', 'error');
+        });
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       DIDIT API — calls go through api.php (same folder)
+    ════════════════════════════════════════════════════════════ */
+    async function diditPost(endpoint, body) {
+      var resp;
+      try {
+        resp = await fetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: endpoint, payload: body })
+        });
+      } catch (e) {
+        throw new Error('Cannot reach api.php — make sure both files are in the same folder on a PHP server.');
+      }
+      var data = await resp.json().catch(function () { return {}; });
+      if (!resp.ok) throw new Error(data.detail || data.message || data.error || 'Error ' + resp.status);
+      return data;
+    }
+
+    /* ── Gmail OTP helpers (self-hosted PHP + MySQL) ── */
+    var PHP_OTP = 'http://localhost/foundwise/api';
+
+    function setGmailStatus(html) { var el = document.getElementById('gmail-otp-status'); if (el) el.innerHTML = html; }
+
+    function getGmailCode() {
+      var code = '';
+      document.querySelectorAll('.gmail-otp-digit').forEach(function (d) { code += d.value; });
+      return code;
+    }
+
+    function startGmailTimer() {
+      fbOtpTimer = 30;
+      var btn = document.getElementById('gmail-otp-send-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Resend (30s)'; }
+      clearInterval(fbOtpInterval);
+      fbOtpInterval = setInterval(function () {
+        fbOtpTimer--;
+        var b = document.getElementById('gmail-otp-send-btn');
+        if (!b) { clearInterval(fbOtpInterval); return; }
+        if (fbOtpTimer <= 0) { clearInterval(fbOtpInterval); b.disabled = false; b.textContent = 'Resend'; }
+        else b.textContent = 'Resend (' + fbOtpTimer + 's)';
+      }, 1000);
+    }
+
+    window.handleGmailDigit = function (el, idx) {
+      el.value = el.value.replace(/\D/g, '').slice(-1);
+      if (el.value && idx < 5) {
+        var next = document.querySelectorAll('.gmail-otp-digit')[idx + 1];
+        if (next) next.focus();
+      }
+      if (getGmailCode().length === 6) window.verifyGmailCode();
+    };
+
+    window.sendGmailCode = async function () {
+      var emailEl = document.getElementById('cl-gmail');
+      var email = emailEl ? emailEl.value.trim() : '';
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('Enter your Gmail address', 'error'); return;
+      }
+      claimData.gmailEmail = email;
+      var btn = document.getElementById('gmail-otp-send-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      setGmailStatus('<span class="didit-spinner"></span><span class="didit-hint">Sending code to your Gmail…</span>');
+      try {
+        var resp = await fetch(PHP_OTP + '/send_otp.php', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        });
+        var data = await resp.json();
+        if (!data.success) throw new Error(data.error || 'Failed to send code');
+        fbOtpSent = true;
+        document.getElementById('gmail-otp-fields-wrap').style.display = '';
+        var msg = 'Code sent to ' + esc(email) + '. Check your inbox.';
+        if (data.dev_code) {
+          msg += '<br><span style="color:#fbbf24;font-size:11px;margin-top:4px;display:inline-block">Dev mode — your code: <strong style="letter-spacing:2px">' + data.dev_code + '</strong></span>';
+        }
+        setGmailStatus('<span class="didit-hint">' + msg + '</span>');
+        startGmailTimer();
+        var first = document.querySelector('.gmail-otp-digit'); if (first) first.focus();
+      } catch (e) {
+        setGmailStatus('<span style="color:#f87171;font-size:11px">&#9888; ' + esc(e.message) + '</span>');
+        if (btn) { btn.disabled = false; btn.textContent = 'Send Code'; }
+      }
+    };
+
+    window.verifyGmailCode = async function () {
+      var code = getGmailCode();
+      if (code.length < 6) { showToast('Enter the full 6-digit code', 'error'); return; }
+      setGmailStatus('<span class="didit-spinner"></span><span class="didit-hint">Verifying…</span>');
+      try {
+        var resp = await fetch(PHP_OTP + '/check_otp.php', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: claimData.gmailEmail, code: code })
+        });
+        var data = await resp.json();
+        if (!data.success) throw new Error(data.error || 'Invalid code');
+        claimData.gmailVerified = true;
+        document.getElementById('gmail-otp-fields-wrap').style.display = 'none';
+        setGmailStatus('<span class="didit-verified-badge">&#10003; Gmail verified</span>');
+        var sendBtn = document.getElementById('gmail-otp-send-btn'); if (sendBtn) sendBtn.style.display = 'none';
+        var nextBtn = document.getElementById('step2-next-btn'); if (nextBtn) nextBtn.style.display = '';
+      } catch (e) {
+        setGmailStatus('<span style="color:#f87171;font-size:11px">&#9888; ' + esc(e.message) + '</span>');
+      }
+    };
+
+    /* ════════════════════════════════════════════════════════════
+       Claim stepper — 4 steps: Identity → Gmail OTP → Proof → Review
+    ════════════════════════════════════════════════════════════ */
+    function makeOtpBoxes() {
+      var html = '';
+      for (var i = 0; i < 6; i++) {
+        html += '<input class="gmail-otp-digit" maxlength="1" inputmode="numeric" ' +
+          'oninput="handleGmailDigit(this,' + i + ')" ' +
+          'onkeydown="(function(e,el,n){if(e.key===\'Backspace\'&&!el.value&&n>0){var p=document.querySelectorAll(\'.gmail-otp-digit\')[n-1];p.value=\'\';p.focus();}})(event,this,' + i + ')" />';
+      }
+      return html;
+    }
+
+    function renderClaimStep(item) {
+      var area = document.getElementById('claim-area');
+      var s = claimStep;
+      var labels = ['Identity', 'Gmail', 'Proof', 'Review'];
+      var stepsHtml = '<div class="steps-row">' + labels.map(function (lbl, i) {
+        var n = i + 1, done = s > n, cur = s === n;
+        return '<div class="step' + (done ? ' done' : '') + '">' +
+          '<div class="snum' + (done ? ' done' : cur ? ' cur' : '') + '">' + (done ? '&#10003;' : n) + '</div>' +
+          '<div class="slbl' + (done ? ' done' : cur ? ' cur' : '') + '">' + lbl + '</div></div>';
+      }).join('') + '</div>';
+      var f = '';
+
+      /* ── Step 1: Identity ── */
+      if (s === 1) {
+        f = '<div class="cfg"><div class="flbl">Full name</div>' +
+          '<input class="finput" id="cl-name" placeholder="Juan dela Cruz" value="' + esc(claimData.name || '') + '" type="text"/></div>' +
+          '<div class="cfg"><div class="flbl">Student / Employee ID</div>' +
+          '<input class="finput" id="cl-id" placeholder="2021-XXXXX" value="' + esc(claimData.sid || '') + '" type="text"/></div>' +
+          '<button class="next-btn" onclick="claimNext1()">Next: Verify Gmail &#8594;</button>';
+
+        /* ── Step 2: Gmail OTP Verification ── */
+      } else if (s === 2) {
+        var gmailIcon = '<svg width="18" height="18" viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" fill="#EA4335"/></svg>';
+        f = '<div style="background:rgba(234,67,53,.08);border:1px solid rgba(234,67,53,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:11.5px;color:var(--fw-t2);line-height:1.7">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' + gmailIcon + '<span style="font-weight:600;color:#f87171">Gmail Verification</span></div>' +
+          '<div>Enter your <strong>Gmail address</strong>. We will send a 6-digit code to verify your identity.</div></div>' +
+          '<div class="cfg">' +
+          '<div class="flbl">Gmail Address</div>' +
+          '<div style="display:flex;gap:6px;align-items:center">' +
+          '<input class="finput" id="cl-gmail" placeholder="you@gmail.com" value="' + esc(claimData.gmailEmail || '') + '" type="email" style="flex:1"/>' +
+          '<button class="didit-send-btn" id="gmail-otp-send-btn" onclick="sendGmailCode()">Send Code</button></div>' +
+          '<div id="gmail-otp-fields-wrap" style="display:none;margin-top:10px">' +
+          '<div class="flbl" style="margin-bottom:6px">Enter 6-digit code</div>' +
+          '<div class="didit-otp-wrap">' + makeOtpBoxes() + '</div>' +
+          '<button class="next-btn" style="margin-top:8px" onclick="verifyGmailCode()">Verify code</button></div>' +
+          '<div class="didit-status-row" id="gmail-otp-status"></div></div>' +
+          '<button class="next-btn" id="step2-next-btn" style="display:none" onclick="claimNext2()">Next: Proof &#8594;</button>' +
+          '<button class="btn-ghost" onclick="claimStep=1;renderClaimStep(items.find(function(i){return i.id===currentDetailId;}))" style="width:100%;margin-top:6px">&#8592; Back</button>';
+
+        /* ── Step 3: Proof of Ownership ── */
+      } else if (s === 3) {
+        f = '<div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:11.5px;color:var(--fw-t2);line-height:1.7">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:16px">📋</span><span style="font-weight:600;color:#c4b5fd">Proof of Ownership</span></div>' +
+          '<div>Describe details that <strong>only the true owner</strong> would know — color, brand, unique marks, contents, etc.</div></div>' +
+          '<div class="cfg"><div class="flbl">Proof description</div>' +
+          '<textarea class="finput" id="cl-proof" rows="5" placeholder="e.g. It\'s a black Nike backpack with a small tear on the left strap. Inside there\'s a blue water bottle and a notebook with my name on the cover..." style="resize:none;font-size:12px;line-height:1.6">' + esc(claimData.proof || '') + '</textarea></div>' +
+          '<button class="next-btn" onclick="claimNext3()">Next: Review &#8594;</button>' +
+          '<button class="btn-ghost" onclick="claimStep=2;renderClaimStep(items.find(function(i){return i.id===currentDetailId;}))" style="width:100%;margin-top:6px">&#8592; Back</button>';
+
+        /* ── Step 4: Review & Submit ── */
+      } else {
+        var gmailSmIcon = '<svg width="13" height="13" viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" fill="#EA4335"/></svg>';
+        f = '<div style="background:rgba(26,86,219,.1);border:1px solid rgba(26,86,219,.2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:11.5px;color:var(--fw-t2);line-height:1.8">' +
+          '<div><span style="color:var(--fw-t3)">Name:</span> ' + esc(claimData.name || '') + '</div>' +
+          '<div><span style="color:var(--fw-t3)">ID:</span> ' + esc(claimData.sid || '') + '</div>' +
+          '<div style="display:flex;align-items:center;gap:5px">' + gmailSmIcon + '<span style="color:var(--fw-t3)">Gmail:</span> ' + esc(claimData.gmailEmail || '') + '</div>' +
+          '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)"><span style="color:var(--fw-t3)">Proof:</span> ' + esc(claimData.proof || '') + '</div></div>' +
+          '<button class="sub-btn" onclick="submitClaim()">Submit claim &#8594;</button>' +
+          '<div class="sub-note">Reviewed by admin within 24 hours</div>' +
+          '<button class="btn-ghost" onclick="claimStep=3;renderClaimStep(items.find(function(i){return i.id===currentDetailId;}))" style="width:100%;margin-top:8px">&#8592; Back</button>';
+      }
+
+      area.innerHTML = stepsHtml + f;
+      area.scrollTop = 0;
+    }
+
+    function claimNext1() {
+      var name = document.getElementById('cl-name').value.trim();
+      if (!name) { showToast('Please enter your name', 'error'); return; }
+      claimData.name = name; claimData.sid = document.getElementById('cl-id').value.trim();
+      claimStep = 2; renderClaimStep(items.find(function (i) { return i.id === currentDetailId; }));
+    }
+
+    function claimNext2() {
+      if (!claimData.gmailVerified) { showToast('Please verify your Gmail first', 'error'); return; }
+      claimStep = 3; renderClaimStep(items.find(function (i) { return i.id === currentDetailId; }));
+    }
+
+    function claimNext3() {
+      var proof = document.getElementById('cl-proof').value.trim();
+      if (!proof) { showToast('Please describe your proof of ownership', 'error'); return; }
+      claimData.proof = proof;
+      claimStep = 4; renderClaimStep(items.find(function (i) { return i.id === currentDetailId; }));
+    }
+
+    function submitClaim() {
+      var item = items.find(function (i) { return i.id === currentDetailId; }); if (!item) return;
+
+      var session = localStorage.getItem('fw_session');
+      var userId = null;
+      if (session) {
+        try { userId = JSON.parse(session).user_id; } catch (e) { }
+      }
+
+      var payload = {
+        itemId: item.id,
+        user_id: userId,
+        sid: claimData.sid,
+        gmailEmail: claimData.gmailEmail,
+        proof: claimData.proof
+      };
+
+      var btn = document.querySelector('.sub-btn');
+      if (btn) { btn.textContent = 'Submitting...'; btn.disabled = true; }
+
+      fetch('/foundwise-server/php/api/submit_claim.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) {
+            if (btn) { btn.textContent = 'Submit claim \u2192'; btn.disabled = false; }
+            showToast(data.error || 'Failed to submit claim', 'error'); return;
+          }
+          claimData = {}; claimStep = 1; fbOtpVerified = false; fbOtpSent = false;
+          fetchData();
+          addActivity('Claim submitted for ' + item.name, '#d97706');
+          showToast('Claim submitted! Awaiting admin review.', 'success');
+        })
+        .catch(err => {
+          if (btn) { btn.textContent = 'Submit claim \u2192'; btn.disabled = false; }
+          showToast('Error communicating with server', 'error');
+        });
+    }
+
+    // ── Session guard ──
+    (function () {
+      var session = localStorage.getItem('fw_session');
+      if (!session) { window.location.href = 'login.html'; return; }
+      try {
+        var user = JSON.parse(session);
+        if (user.provider === 'google') { user.role = 'Admin'; }
+        document.getElementById('user-name').textContent = user.name || 'Admin';
+        document.getElementById('user-role').textContent = user.role || 'Staff';
+        var initials = (user.name || 'AD').split(' ').map(function (w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+        document.getElementById('user-ava').textContent = initials;
+      } catch (e) { }
+    })();
+
+    function logout() {
+      localStorage.removeItem('fw_session');
+      window.location.href = 'login.html';
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       Found Item Prompt — Modal to collect owner email
+       Appears when an item is reported as "found" so the admin
+       can enter the owner's email and trigger EmailJS notification.
+    ══════════════════════════════════════════════════════════ */
+    function showFoundItemPrompt(item) {
+      var modal = document.getElementById('proof-modal');
+      var body = document.getElementById('proof-modal-body');
+      var foot = modal.querySelector('.modal-foot');
+      modal.querySelector('.modal-title').textContent = 'Notify Item Owner';
+
+      body.innerHTML =
+        '<div style="text-align:center;margin-bottom:16px">' +
+        '<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(28,92,56,.2),rgba(58,175,114,.2));border:1px solid rgba(58,175,114,.25);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px">' +
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>' +
+        '</div>' +
+        '<div style="font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--fw-t1);margin-bottom:4px">Item Found: ' + esc(item.name) + '</div>' +
+        '<div style="font-size:11.5px;color:var(--fw-t3)">Enter the owner\'s email to send a notification</div>' +
+        '</div>' +
+        '<div class="cfg">' +
+        '<div class="flbl">Owner\'s Name</div>' +
+        '<input class="finput" id="found-owner-name" placeholder="e.g. Juan dela Cruz" type="text"/>' +
+        '</div>' +
+        '<div class="cfg">' +
+        '<div class="flbl">Owner\'s Email</div>' +
+        '<input class="finput" id="found-owner-email" placeholder="owner@gmail.com" type="email"/>' +
+        '</div>' +
+        '<div style="font-size:10.5px;color:var(--fw-t3);line-height:1.6;margin-top:4px">' +
+        'An email will be sent via EmailJS with item details and retrieval instructions. ' +
+        'You can also notify later from the Notifications panel.' +
+        '</div>';
+
+      foot.innerHTML =
+        '<button class="btn-ghost" onclick="closeFoundPrompt()">Skip</button>' +
+        '<button class="btn-primary" id="found-prompt-send" onclick="sendFoundNotification(\'' + item.id + '\')">Send Notification</button>';
+
+      modal.classList.add('show');
+    }
+
+    function closeFoundPrompt() {
+      var modal = document.getElementById('proof-modal');
+      modal.classList.remove('show');
+      // Restore original modal footer
+      modal.querySelector('.modal-title').textContent = 'Claim Proof';
+      modal.querySelector('.modal-foot').innerHTML = '<button class="btn-ghost" onclick="closeModal()">Close</button>';
+    }
+
+    function sendFoundNotification(itemId) {
+      var item = items.find(function (i) { return i.id === itemId; });
+      if (!item) { showToast('Item not found', 'error'); return; }
+
+      var ownerName = (document.getElementById('found-owner-name').value || '').trim();
+      var ownerEmail = (document.getElementById('found-owner-email').value || '').trim();
+
+      if (!ownerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+      }
+
+      // Add to notifications with Notify Owner button
+      addFoundItemNotification(item, ownerEmail, ownerName || 'Student');
+
+      // Immediately trigger the email send (index 0 since we just unshifted)
+      notifyOwnerViaEmail(0);
+
+      closeFoundPrompt();
+    }
+
+    init();
+  </script>
+</body>
+
+</html>

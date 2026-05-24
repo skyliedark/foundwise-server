@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>FoundWise — Sign In</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
+  <style>
+    :root {
+      --fw-bg: #0D1F16;
+      --fw-blue: #C5E938;
+      --fw-violet: #3AAF72;
+      --fw-magenta: #1C5C38;
+      --fw-glass: rgba(255, 255, 255, .04);
+      --fw-glass-border: rgba(197, 233, 56, .12);
+      --fw-t1: #EEF6EC;
+      --fw-t2: rgba(210, 235, 215, .80);
+      --fw-t3: rgba(210, 235, 215, .45);
+      --font-display: "Clash Display", ui-sans-serif, system-ui, sans-serif;
+      --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+      --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--fw-bg);
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--fw-t1);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      inset: -20%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background: radial-gradient(30% 25% at 20% 25%, rgba(58, 175, 114, .45), transparent 70%),
+        radial-gradient(28% 22% at 75% 70%, rgba(28, 92, 56, .55), transparent 70%),
+        radial-gradient(25% 20% at 50% 50%, rgba(100, 190, 130, .30), transparent 70%);
+      filter: blur(70px);
+      animation: aurora1 20s ease-in-out infinite alternate;
+      opacity: .9;
+    }
+
+    body::after {
+      background: radial-gradient(32% 26% at 80% 20%, rgba(197, 233, 56, .35), transparent 70%),
+        radial-gradient(30% 24% at 15% 80%, rgba(39, 96, 65, .50), transparent 70%);
+      filter: blur(80px);
+      animation: aurora2 24s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes aurora1 {
+      0% {
+        transform: translate3d(-8%, -6%, 0) scale(1);
+      }
+
+      50% {
+        transform: translate3d(10%, 8%, 0) rotate(20deg) scale(1.15);
+      }
+
+      100% {
+        transform: translate3d(-4%, 12%, 0) rotate(-10deg) scale(1.05);
+      }
+    }
+
+    @keyframes aurora2 {
+      0% {
+        transform: translate3d(6%, 10%, 0) scale(1.1);
+      }
+
+      50% {
+        transform: translate3d(-12%, -6%, 0) rotate(-25deg) scale(1.2);
+      }
+
+      100% {
+        transform: translate3d(8%, -10%, 0) rotate(15deg) scale(1);
+      }
+    }
+
+    .shimmer-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(58, 175, 114, .8) 25%, rgba(197, 233, 56, 1) 50%, rgba(39, 96, 65, .8) 75%, transparent);
+      background-size: 200% 100%;
+      animation: shimbar 4s ease-in-out infinite;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    @keyframes shimbar {
+      0% {
+        background-position: 200% 0;
+        opacity: .55;
+      }
+
+      50% {
+        background-position: 0% 0;
+        opacity: 1;
+      }
+
+      100% {
+        background-position: -200% 0;
+        opacity: .55;
+      }
+    }
+
+    /* Card */
+    .login-card {
+      position: relative;
+      z-index: 1;
+      width: 400px;
+      max-width: 92vw;
+      background: rgba(8, 24, 12, .90);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--fw-glass-border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .55);
+    }
+
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1C5C38, #3AAF72 60%, #C5E938);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(58, 175, 114, .4), 0 6px 20px rgba(58, 175, 114, .55);
+      position: relative;
+      animation: logo-pulse 3s ease-in-out infinite;
+    }
+
+    .brand-logo::after {
+      content: '';
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #C5E938;
+      bottom: -2px;
+      right: -2px;
+      border: 2px solid #0D1F16;
+    }
+
+    @keyframes logo-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 1px rgba(58, 175, 114, .4), 0 6px 20px rgba(58, 175, 114, .55);
+      }
+
+      50% {
+        box-shadow: 0 0 0 5px rgba(58, 175, 114, .18), 0 6px 30px rgba(197, 233, 56, .7);
+      }
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.035em;
+    }
+
+    .brand-sub {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+      margin-top: 1px;
+      letter-spacing: .04em;
+    }
+
+    /* Heading */
+    h1 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      letter-spacing: -0.03em;
+      color: #fff;
+    }
+
+    h1 em {
+      font-family: var(--font-serif) !important;
+      font-style: italic;
+      font-weight: 400;
+      color: #C5E938;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--fw-t3);
+      margin-bottom: 24px;
+    }
+
+    /* Form */
+    .fg {
+      margin-bottom: 16px;
+    }
+
+    .flbl {
+      font-family: var(--font-display);
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--fw-t3);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      color: var(--fw-t3);
+      display: flex;
+      pointer-events: none;
+    }
+
+    .input-action {
+      position: absolute;
+      right: 10px;
+      color: var(--fw-t3);
+      cursor: pointer;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .input-action:hover {
+      color: var(--fw-t1);
+    }
+
+    .finput {
+      width: 100%;
+      padding: 11px 14px 11px 38px;
+      border-radius: 10px;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      font-size: 13.5px;
+      color: var(--fw-t1);
+      outline: none;
+      font-family: var(--font-sans);
+      transition: border .15s, box-shadow .15s;
+    }
+
+    .finput::placeholder {
+      color: var(--fw-t3);
+    }
+
+    .finput:focus {
+      border-color: rgba(58, 175, 114, .65);
+      box-shadow: 0 0 0 3px rgba(58, 175, 114, .18);
+    }
+
+    .fselect {
+      width: 100%;
+      padding: 11px 14px 11px 38px;
+      border-radius: 10px;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      font-size: 13.5px;
+      color: var(--fw-t1);
+      outline: none;
+      font-family: var(--font-sans);
+      transition: border .15s, box-shadow .15s;
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    .fselect:focus {
+      border-color: rgba(58, 175, 114, .65);
+      box-shadow: 0 0 0 3px rgba(58, 175, 114, .18);
+    }
+
+    .fselect option {
+      background: #0D1F16;
+      color: #f1f5f9;
+    }
+
+    /* Remember / Forgot */
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 12.5px;
+      color: var(--fw-t2);
+    }
+
+    .remember input {
+      accent-color: #3AAF72;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .forgot {
+      font-size: 12.5px;
+      color: #86efac;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .forgot:hover {
+      color: #C5E938;
+    }
+
+    /* Primary button */
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+      font-family: var(--font-sans);
+      background: linear-gradient(135deg, #1C5C38, #3AAF72 60%, #C5E938);
+      box-shadow: 0 4px 16px rgba(58, 175, 114, .45);
+      transition: all .2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(197, 233, 56, .55);
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--fw-glass-border);
+    }
+
+    .divider span {
+      font-size: 10.5px;
+      color: var(--fw-t3);
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+
+    /* Social buttons */
+    .socials {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .social-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--fw-glass-border);
+      background: var(--fw-glass);
+      color: var(--fw-t2);
+      font-family: var(--font-sans);
+      transition: all .15s;
+    }
+
+    .social-btn:hover {
+      background: rgba(58, 175, 114, .15);
+      color: var(--fw-t1);
+      border-color: rgba(255, 255, 255, .18);
+    }
+
+    /* Footer link */
+    .footer-link {
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--fw-t3);
+    }
+
+    .footer-link a {
+      color: #86efac;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .footer-link a:hover {
+      color: #C5E938;
+      text-decoration: underline;
+    }
+
+    /* Status */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      min-height: 20px;
+      flex-wrap: wrap;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(147, 197, 253, .2);
+      border-top-color: #86efac;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .hint {
+      font-size: 11.5px;
+      color: var(--fw-t3);
+    }
+
+    .err-msg {
+      font-size: 11.5px;
+      color: #f87171;
+    }
+
+    /* ── Sign Up form (hidden by default) ── */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shimmer-bar"></div>
+  <div class="login-card">
+
+    <div class="brand">
+      <div class="brand-logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2L13 7H17L14 11L15.5 16L10 13L4.5 16L6 11L3 7H7L10 2Z" fill="white" opacity=".9" />
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">FoundWise</div>
+        <div class="brand-sub">Lost &amp; Found System</div>
+      </div>
+    </div>
+
+    <!-- SIGN IN -->
+    <div id="form-signin">
+      <h1>Welcome <em>back</em></h1>
+      <div class="subtitle">Sign in to manage lost &amp; found items</div>
+
+      <div class="fg">
+        <label class="flbl">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round">
+              <rect x="2" y="4" width="20" height="16" rx="3" />
+              <path d="M22 7l-10 6L2 7" />
+            </svg></span>
+          <input class="finput" id="si-email" placeholder="you@university.edu" type="email" />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flbl">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg></span>
+          <input class="finput" id="si-pass" placeholder="Enter your password" type="password" />
+          <button class="input-action" onclick="togglePass()" type="button" id="eye-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="row-between">
+        <label class="remember"><input type="checkbox" id="si-remember" /> Remember me</label>
+        <a class="forgot" onclick="showForgot()">Forgot password?</a>
+      </div>
+
+      <button class="btn-primary" id="si-btn" onclick="handleSignIn()">Sign in</button>
+      <div class="status" id="si-status"></div>
+
+      <div class="divider"><span>or continue with</span></div>
+
+      <div class="socials">
+        <button class="social-btn" id="google-signin-btn" onclick="googleSignIn()" style="flex:1">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+          Sign in with Google
+        </button>
+      </div>
+
+      <div class="footer-link">Don't have an account? <a onclick="switchTo('signup')">Create one</a></div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div id="form-signup" class="hidden">
+      <h1>Create <em>account</em></h1>
+      <div class="subtitle">Register to start using the system</div>
+
+      <div class="fg">
+        <label class="flbl">Full Name</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg></span>
+          <input class="finput" id="su-name" placeholder="e.g. Sarah Kim" type="text" />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flbl">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round">
+              <rect x="2" y="4" width="20" height="16" rx="3" />
+              <path d="M22 7l-10 6L2 7" />
+            </svg></span>
+          <input class="finput" id="su-email" placeholder="you@university.edu" type="email" />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flbl">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8" stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg></span>
+          <input class="finput" id="su-pass" placeholder="Create a password" type="password" />
+        </div>
+      </div>
+
+      <button class="btn-primary" id="su-btn" onclick="handleSignUp()" style="margin-top:4px">Create account</button>
+      <div class="status" id="su-status"></div>
+
+      <div class="divider"><span>or continue with</span></div>
+
+      <div class="socials">
+        <button class="social-btn" onclick="googleSignIn()" style="flex:1">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+          Sign up with Google
+        </button>
+      </div>
+
+      <div class="footer-link">Already have an account? <a onclick="switchTo('signin')">Sign in</a></div>
+    </div>
+
+  </div>
+
+  <script>
+    var PHP_API = 'http://localhost/foundwise-server/php/api';
+
+    function switchTo(form) {
+      document.getElementById('form-signin').classList.toggle('hidden', form !== 'signin');
+      document.getElementById('form-signup').classList.toggle('hidden', form !== 'signup');
+      document.getElementById('si-status').innerHTML = '';
+      document.getElementById('su-status').innerHTML = '';
+    }
+
+    function togglePass() {
+      var p = document.getElementById('si-pass');
+      p.type = p.type === 'password' ? 'text' : 'password';
+    }
+
+    function setStatus(id, html) { document.getElementById(id).innerHTML = html; }
+
+    function showForgot() {
+      alert('Please contact admin to reset your password.\nadmin@foundwise.com');
+    }
+
+    // ── Google Sign-In (OAuth2 popup) ───────────────────────────
+    var GOOGLE_CLIENT_ID = '208673264890-c0lajnmi85r7ofu7tlcdfim7gjj155d2.apps.googleusercontent.com';
+    var googleTokenClient = null;
+
+    function initGoogleClient() {
+      if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+        setTimeout(initGoogleClient, 300);
+        return;
+      }
+      googleTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'email profile',
+        callback: handleGoogleToken,
+      });
+    }
+
+    function googleSignIn() {
+      if (!googleTokenClient) {
+        setStatus('si-status', '<span class="hint">Loading Google... please wait.</span>');
+        initGoogleClient();
+        setTimeout(googleSignIn, 500);
+        return;
+      }
+      googleTokenClient.requestAccessToken();
+    }
+
+    async function handleGoogleToken(tokenResponse) {
+      if (tokenResponse.error) {
+        setStatus('si-status', '<span class="err-msg">⚠ Google sign-in cancelled.</span>');
+        return;
+      }
+      setStatus('si-status', '<span class="spinner"></span><span class="hint">Signing in with Google...</span>');
+
+      try {
+        // Get user info from Google
+        var infoResp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { 'Authorization': 'Bearer ' + tokenResponse.access_token }
+        });
+        var userInfo = await infoResp.json();
+
+        // Send to our backend
+        var resp = await fetch(PHP_API + '/google_auth.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userInfo.email, name: userInfo.name, google_id: userInfo.sub })
+        });
+        var data = await resp.json();
+        if (!data.success) throw new Error(data.error || 'Google sign-in failed');
+
+        var session = {
+          name: data.name || userInfo.name,
+          email: userInfo.email,
+          role: 'Admin',           // always Admin for Google users
+          provider: 'google',      // new flag to identify Google sign-ins
+          user_id: data.user_id
+        };
+
+        localStorage.setItem('fw_session', JSON.stringify(session));
+        setStatus('si-status', '<span style="color:#4ade80;font-size:12px;font-weight:500">✓ Welcome, ' + session.name + '!</span>');
+        setTimeout(function () { window.location.href = 'FoundWise.html'; }, 800);
+
+      } catch (e) {
+        setStatus('si-status', '<span class="err-msg">⚠ ' + e.message + '</span>');
+      }
+    }
+
+    initGoogleClient();
+
+    // ── SIGN IN ──────────────────────────────────────────────────
+    async function handleSignIn() {
+      var email = document.getElementById('si-email').value.trim().toLowerCase();
+      var pass = document.getElementById('si-pass').value;
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setStatus('si-status', '<span class="err-msg">Please enter a valid email address.</span>'); return;
+      }
+      if (!pass) {
+        setStatus('si-status', '<span class="err-msg">Please enter your password.</span>'); return;
+      }
+
+      var btn = document.getElementById('si-btn');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      setStatus('si-status', '<span class="spinner"></span><span class="hint">Checking your account…</span>');
+
+      try {
+        var resp = await fetch(PHP_API + '/login.php', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: pass })
+        });
+        var data = await resp.json();
+        if (!data.success) throw new Error(data.error || 'Login failed');
+
+        var roleLabels = { student: 'Student', front_desk: 'Front Desk Admin', admin: 'Administrator' };
+        var session = {
+          name: data.name || email.split('@')[0],
+          email: email,
+          role: roleLabels[data.role] || data.role || 'Student',
+          user_id: data.user_id
+        };
+
+        try {
+          var tr = await fetch(PHP_API + '/verify_otp.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+          });
+          var td = await tr.json();
+          if (td.token) session.token = td.token;
+          if (td.user && td.user.name) session.name = td.user.name;
+        } catch (e) { }
+
+        if (document.getElementById('si-remember').checked) {
+          localStorage.setItem('fw_remember_email', email);
+        } else {
+          localStorage.removeItem('fw_remember_email');
+        }
+
+        localStorage.setItem('fw_session', JSON.stringify(session));
+        setStatus('si-status', '<span style="color:#4ade80;font-size:12px;font-weight:500">✓ Welcome back, ' + session.name + '!</span>');
+        setTimeout(function () { window.location.href = 'FoundWise.html'; }, 800);
+
+      } catch (e) {
+        setStatus('si-status', '<span class="err-msg">⚠ ' + e.message + '</span>');
+        btn.disabled = false; btn.textContent = 'Sign in';
+      }
+    }
+
+    // ── SIGN UP ──────────────────────────────────────────────────
+    async function handleSignUp() {
+      var name = document.getElementById('su-name').value.trim();
+      var email = document.getElementById('su-email').value.trim().toLowerCase();
+      var pass = document.getElementById('su-pass').value;
+      var role = 'student';
+
+      if (!name) { setStatus('su-status', '<span class="err-msg">Please enter your name.</span>'); return; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setStatus('su-status', '<span class="err-msg">Please enter a valid email.</span>'); return;
+      }
+      if (!pass || pass.length < 4) {
+        setStatus('su-status', '<span class="err-msg">Password must be at least 4 characters.</span>'); return;
+      }
+
+      var btn = document.getElementById('su-btn');
+      btn.disabled = true; btn.textContent = 'Creating account…';
+      setStatus('su-status', '<span class="spinner"></span><span class="hint">Setting up your account…</span>');
+
+      try {
+        var resp = await fetch(PHP_API + '/register.php', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, name: name, password: pass, role: role })
+        });
+        var data = await resp.json();
+        if (!data.success) throw new Error(data.error || 'Registration failed');
+
+        var roleLabels = { student: 'Student', front_desk: 'Front Desk Admin', admin: 'Administrator' };
+        var session = { name: name, email: email, role: roleLabels[role] || 'Student', user_id: data.user_id };
+
+        try {
+          var tr = await fetch(PHP_API + '/verify_otp.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+          });
+          var td = await tr.json();
+          if (td.token) session.token = td.token;
+        } catch (e) { }
+
+        localStorage.setItem('fw_session', JSON.stringify(session));
+        setStatus('su-status', '<span style="color:#4ade80;font-size:12px;font-weight:500">✓ Account created! Redirecting…</span>');
+        setTimeout(function () { window.location.href = 'FoundWise.html'; }, 800);
+
+      } catch (e) {
+        setStatus('su-status', '<span class="err-msg">⚠ ' + e.message + '</span>');
+        btn.disabled = false; btn.textContent = 'Create account';
+      }
+    }
+
+    // Enter key
+    document.getElementById('si-email').addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('si-pass').focus(); });
+    document.getElementById('si-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') handleSignIn(); });
+    document.getElementById('su-name').addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('su-email').focus(); });
+    document.getElementById('su-email').addEventListener('keydown', function (e) { if (e.key === 'Enter') document.getElementById('su-pass').focus(); });
+    document.getElementById('su-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') handleSignUp(); });
+
+    // Prefill remembered email
+    (function () {
+      var rem = localStorage.getItem('fw_remember_email');
+      if (rem) { document.getElementById('si-email').value = rem; document.getElementById('si-remember').checked = true; }
+    })();
+
+    // If already logged in, skip
+    (function () {
+      var s = localStorage.getItem('fw_session');
+      if (s) { try { JSON.parse(s); window.location.href = 'FoundWise.html'; } catch (e) { } }
+    })();
+  </script>
+</body>
+
+</html>
