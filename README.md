@@ -1,7 +1,7 @@
-# FoundWise — Secure OTP Server
+# FoundWise — Lost & Found Management System
 
-This Node.js/Express server proxies email OTP requests to the **Didit API**.  
-Your `DIDIT_API_KEY` lives only in the `.env` file on the server — it is **never** sent to the browser.
+A Node.js/Express backend for the **FoundWise** campus lost-and-found platform.  
+Handles OTP verification (via Didit API), item claim workflows, and email notifications (via Nodemailer/Gmail SMTP) — all backed by a MySQL database running on XAMPP.
 
 ---
 
@@ -9,12 +9,17 @@ Your `DIDIT_API_KEY` lives only in the `.env` file on the server — it is **nev
 
 ```
 foundwise-server/
-├── server.js          ← Express backend (OTP proxy)
+├── server.js           ← Express backend (OTP proxy, claim API)
+├── mailer.js           ← Nodemailer email notifications
 ├── package.json
-├── .env.example       ← Copy this to .env and fill in your keys
-├── .gitignore         ← Keeps .env out of Git
+├── .env.example        ← Copy to .env and fill in your keys
+├── .gitignore
+├── database/           ← SQL schema & migrations
+├── php/                ← PHP helpers (legacy API bridge)
 └── public/
-    └── index.html     ← Your FoundWise frontend (served by Express)
+    ├── FoundWise.html  ← Main dashboard (admin & student)
+    ├── login.html      ← Login / OTP verification page
+    └── api.php         ← PHP API endpoint
 ```
 
 ---
@@ -31,17 +36,35 @@ npm install
 cp .env.example .env
 ```
 
-Open `.env` and set your real Didit API key:
+Open `.env` and fill in **all** values:
 ```env
-DIDIT_API_KEY=your_real_didit_api_key_here
+# Didit OTP API
+DIDIT_API_KEY=your_didit_api_key_here
 DIDIT_BASE_URL=https://verification.didit.me
+
+# Server
 PORT=3000
 ALLOWED_ORIGIN=http://localhost:3000
+
+# MySQL (XAMPP)
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=foundwise
+DB_USER=root
+DB_PASS=
+
+# PHP API bridge
+PHP_API_URL=http://localhost/foundwise/api
+
+# Gmail SMTP (claim notifications)
+GMAIL_USER=your.school.email@gmail.com
+GMAIL_APP_PASSWORD=your_16_char_app_password_here
 ```
 
-> **Get your API key:** Log in at https://didit.me → Dashboard → API Keys → Create New Key
+### 3. Start XAMPP
+Make sure **Apache** and **MySQL** are running in the XAMPP Control Panel.
 
-### 3. Start the server
+### 4. Start the server
 ```bash
 # Production
 npm start
@@ -50,33 +73,19 @@ npm start
 npm run dev
 ```
 
-### 4. Open the app
+### 5. Open the app
 Go to: **http://localhost:3000**
 
 ---
 
 ## API Endpoints
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| `POST` | `/api/otp/send` | Sends a 6-digit OTP to the given email |
-| `POST` | `/api/otp/verify` | Verifies the OTP code entered by the user |
-
-### Send OTP
-```
-POST /api/otp/send
-Content-Type: application/json
-
-{ "email": "user@example.com" }
-```
-
-### Verify OTP
-```
-POST /api/otp/verify
-Content-Type: application/json
-
-{ "email": "user@example.com", "code": "123456" }
-```
+| Method | Route               | Description                                    |
+|--------|---------------------|------------------------------------------------|
+| `POST` | `/api/otp/send`     | Sends a 6-digit OTP to the given email         |
+| `POST` | `/api/otp/verify`   | Verifies the OTP code entered by the user      |
+| `POST` | `/api/claim/notify` | Sends a claim notification email to a student  |
+| `POST` | `/claim-item`       | Marks an item as claimed and notifies the owner|
 
 ---
 
@@ -87,35 +96,4 @@ Content-Type: application/json
 - ✅ **CORS** — only your own frontend origin can call the API
 - ✅ **Input validation** — email format and 6-digit code are validated server-side
 - ✅ **Error sanitization** — raw Didit errors are never leaked to the client
-
----
-
-## Deploying to Production
-
-### Option A: Railway / Render / Fly.io (easiest)
-1. Push your code to GitHub (`.env` is in `.gitignore` — safe to push)
-2. Create a new project on [Railway](https://railway.app) or [Render](https://render.com)
-3. Set the environment variables in their dashboard (same as your `.env`)
-4. Deploy — they auto-detect Node.js and run `npm start`
-
-### Option B: VPS (e.g. DigitalOcean)
-```bash
-# On your server
-git clone your-repo
-cd foundwise-server
-npm install --production
-cp .env.example .env
-nano .env   # fill in your keys
-npm start   # or use PM2: pm2 start server.js --name foundwise
-```
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
-|---------|-----|
-| `DIDIT_API_KEY is not set` | Copy `.env.example` → `.env` and set your key |
-| `502 Bad Gateway` on OTP send | Your API key is wrong — regenerate it at didit.me |
-| `Too many OTP requests` | Rate limit hit — wait 10 minutes |
-| CORS error in browser | Set `ALLOWED_ORIGIN` in `.env` to match your frontend URL |
+- ✅ **DB transactions** — claim operations use transactions with rollback on failure
